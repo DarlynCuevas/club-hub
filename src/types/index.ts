@@ -58,20 +58,15 @@ export interface EventDB {
   teams: { name: string }[]
 }
 
-
-export interface Message {
-  id: string;
-  clubId?: string;
-  teamId?: string;
-  title: string;
-  content: string;
-  authorId: string;
-  authorName: string;
-  priority: 'normal' | 'important';
-  createdAt: string;
+export type Message = {
+  id: string
+  title: string
+  body: string
+  created_at: string
+  users_profile: {
+    full_name: string
+  } | null
 }
-
-
 
 // Auth context types
 export interface AuthState {

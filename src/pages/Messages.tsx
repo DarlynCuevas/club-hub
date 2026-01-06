@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
+import { format } from 'date-fns'
+
 export default function Messages() {
-  const { role, clubId } = useAuth()
+  const { role, clubId, user } = useAuth()
   const { t } = useTranslation()
   const [messages, setMessages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -13,25 +15,73 @@ export default function Messages() {
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [creating, setCreating] = useState(false)
+  const [teamId, setTeamId] = useState<string>('')
+  const [teams, setTeams] = useState<any[]>([])
+  const [userTeamIds, setUserTeamIds] = useState<string[]>([])
 
-// 🔹 Load messages
+  // Cargar equipos para el selector
   useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      setError(null)
+    const loadTeams = async () => {
+      if (!clubId) return;
+      const { data } = await supabase
+        .from('teams')
+        .select('id, name')
+        .eq('club_id', clubId)
+      const teamsWithGlobal = [{ id: null, name: 'Global (todo el club)' }, ...(data || [])]
+      setTeams(teamsWithGlobal)
+      setLoading(false)
+    }
+    if (role === 'coach' || role === 'club_admin') loadTeams()
+    else setLoading(false)
+  }, [clubId, role])
 
-      const { data, error } = await supabase
+  // Cargar equipos del usuario (userTeamIds)
+  useEffect(() => {
+    const fetchUserTeams = async () => {
+      if (!user) return setUserTeamIds([])
+      if (role === 'coach' || role === 'club_admin') {
+        // Coach y admin pueden ver todos los equipos
+        const { data } = await supabase
+          .from('teams')
+          .select('id')
+          .eq('club_id', clubId)
+        setUserTeamIds((data || []).map((tm: any) => tm.id))
+      } else {
+        // Otros roles: no hay relación directa
+        setUserTeamIds([])
+      }
+    }
+    fetchUserTeams()
+  }, [user, role, clubId])
+
+  // Cargar mensajes filtrados según el rol y equipos
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!user) return;
+      let query = supabase
         .from('messages')
-        .select('id, title, body, created_at')
+        .select(`
+          id,
+          title,
+          body,
+          created_at,
+          users_profile (
+            full_name,
+            role:user_roles(role)
+          )
+        `)
         .order('created_at', { ascending: false })
-
-      if (error) setError('messages.failedLoad')
+      if (role === 'club_admin') {
+        // Admin ve todo
+      } else {
+        query = query.or(`team_id.is.null,team_id.in.(${userTeamIds.join(',')})`)
+      }
+      const { data } = await query
       setMessages(data || [])
       setLoading(false)
     }
-
-    load()
-  }, [])
+    loadMessages()
+  }, [user, role, userTeamIds])
 
   // 🔹 Create message (coach / admin)
   const handleCreateMessage = async () => {
@@ -43,9 +93,10 @@ export default function Messages() {
 
     const { error } = await supabase.from('messages').insert({
       club_id: clubId,
-      team_id: null,
+      team_id: teamId || null,
       title,
       body,
+      created_by: user.id,
     })
 
     setCreating(false)
@@ -53,6 +104,7 @@ export default function Messages() {
     if (!error) {
       setTitle('')
       setBody('')
+      setTeamId('')
       // reload messages
       const { data } = await supabase
         .from('messages')
@@ -86,6 +138,15 @@ export default function Messages() {
             placeholder={t('messages.form.body')}
             className="w-full border px-3 py-2 rounded-md"
           />
+          <select
+            value={teamId}
+            onChange={e => setTeamId(e.target.value)}
+            className="w-full border px-3 py-2 rounded-md"
+          >
+            {teams.map(team => (
+              <option key={team.id ?? 'global'} value={team.id ?? ''}>{team.name}</option>
+            ))}
+          </select>
           <button
             onClick={handleCreateMessage}
             disabled={creating}
@@ -104,15 +165,27 @@ export default function Messages() {
       )}
 
       {/* 🔹 Messages list */}
-      {messages.map((m) => (
-        <article key={m.id} className="border-b pb-4">
-          <h3 className="font-semibold">{m.title}</h3>
-          <p className="text-muted-foreground">{m.body}</p>
-          <span className="text-xs text-muted-foreground">
-            {new Date(m.created_at).toLocaleString()}
-          </span>
-        </article>
-      ))}
+      {messages.map((m) => {
+        const roleName = Array.isArray(m.users_profile?.role)
+          ? m.users_profile.role[0]?.role || ''
+          : typeof m.users_profile?.role === 'string'
+            ? m.users_profile.role
+            : '';
+        return (
+          <article key={m.id} className="border-b pb-4">
+            <h3 className="font-semibold">{m.title}</h3>
+            <p className="text-xs text-muted-foreground mb-2">
+              {m.users_profile?.full_name}
+              {roleName && (
+                <> ({t(`roles.${roleName}`)})</>
+              )}
+              {' · '}
+              {format(new Date(m.created_at), 'dd/MM HH:mm')}
+            </p>
+            <p className="text-muted-foreground">{m.body}</p>
+          </article>
+        )
+      })}
     </div>
   )
 }

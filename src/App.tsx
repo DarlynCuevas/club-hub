@@ -14,6 +14,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import EventDetail from "./pages/EventDetail";
 import AdminEvents from "./pages/admin/Events";
+import TeamDetailAdmin from "./pages/admin/TeamDetailAdmin";
 import { useLocation } from 'react-router-dom';
 import { ToastProvider, ToastViewport } from "@/components/ui/toast"
 const queryClient = new QueryClient();
@@ -57,6 +58,8 @@ function AppRoutes() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
         <Route path="/admin/events" element={<AdminEvents />} />
+        <Route path="/admin/teams" element={<Teams />} />
+        <Route path="/admin/teams/:teamId" element={<TeamDetailAdmin />} />
 
       </Route>
       <Route path="*" element={<NotFound />} />

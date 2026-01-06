@@ -42,10 +42,28 @@ export default function Home() {
       // Fetch recent messages
       const { data: messagesData, error: messagesError } = await supabase
         .from('messages')
-        .select('*')
+        .select(`
+          id,
+          title,
+          body,
+          created_at,
+          users_profile (
+            full_name
+          )
+        `)
         .order('created_at', { ascending: false })
         .limit(2);
-      if (!messagesError) setRecentMessages(messagesData || []);
+      if (!messagesError) {
+        setRecentMessages(
+          (messagesData || []).map(m => ({
+            id: m.id,
+            title: m.title,
+            body: m.body,
+            authorName: m.users_profile?.full_name ?? '—',
+            createdAt: m.created_at,
+          }))
+        )
+      }
 
       // Fetch players (for parent role)
       if (role === 'parent' && user) {
@@ -184,20 +202,33 @@ export default function Home() {
             <Card key={message.id} className="shadow-card">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.priority === 'important' 
-                      ? 'bg-destructive/10 text-destructive' 
-                      : 'bg-secondary text-muted-foreground'
-                  }`}>
+                  {/* Icon */}
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.priority === 'important'
+                        ? 'bg-destructive/10 text-destructive'
+                        : 'bg-secondary text-muted-foreground'
+                      }`}
+                  >
                     <Bell className="w-4 h-4" />
                   </div>
+
+                  {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground">{message.title}</p>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {message.content}
+                    {/* Title */}
+                    <p className="font-medium text-foreground leading-snug">
+                      {message.title}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {message.authorName} • {format(new Date(message.createdAt), 'MMM d')}
+
+                    {/* Meta */}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {message.authorName}
+                      {message.authorRole && (
+                        <> · {t(`roles.${message.authorRole}`)}</>
+                      )}
+                      {' · '}
+                      {message.createdAt && !isNaN(new Date(message.createdAt).getTime())
+                        ? format(new Date(message.createdAt), 'MMM d')
+                        : t('home.invalidDate')}
                     </p>
                   </div>
                 </div>

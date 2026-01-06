@@ -378,9 +378,62 @@ export default function EventDetail() {
           )}
         </CardContent>
       </Card>
-
-      {/* === ATTENDANCE CARD (sin cambios) === */}
-      {/* ... */}
+      <Card className="shadow-card">
+        <CardContent className="p-4 space-y-3">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase">
+            {t('eventDetail.attendance')}
+          </h2>
+          {attendance.map(a => (
+            <div key={a.id} className="flex items-center justify-between">
+              <span>{a.players[0]?.full_name}</span>
+              <div className="flex items-center gap-2">
+                {canEditAttendance ? (
+                  <>
+                    <button
+                      disabled={savingId === a.id}
+                      onClick={() => updateStatus(a.id, 'present')}
+                      className={`px-2 py-1 text-xs rounded transition
+                  ${a.status === 'present'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted'}
+                  ${savingId === a.id ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+                    >
+                      Present
+                    </button>
+                    <button
+                      disabled={savingId === a.id}
+                      onClick={() => updateStatus(a.id, 'absent')}
+                      className={`px-2 py-1 text-xs rounded transition
+                  ${a.status === 'absent'
+                          ? 'bg-destructive text-destructive-foreground'
+                          : 'bg-muted'}
+                  ${savingId === a.id ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+                    >
+                      Absent
+                    </button>
+                    {savingId === a.id && (
+                      <span className="text-xs text-muted-foreground ml-1">
+                        Saving…
+                      </span>
+                    )}
+                    {errorId === a.id && (
+                      <span className="text-xs text-red-600 ml-1">
+                        Error
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm text-muted-foreground capitalize">
+                    {a.status}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   )
 }
