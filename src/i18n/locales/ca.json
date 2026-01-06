@@ -1,0 +1,105 @@
+    {
+    "adminEvents": {
+        "title": "Esdeveniments",
+        "new": "Nou esdeveniment",
+        "noAccess": "No tens accés a aquesta secció",
+        "listPlaceholder": "La llista d'esdeveniments apareixerà aquí"
+    },
+
+        "calendar": {
+            "title": "Calendari",
+            "days": ["Dg", "Dl", "Dt", "Dc", "Dj", "Dv", "Ds"],
+            "noEvents": "No hi ha esdeveniments programats",
+            "months": [
+                "Gener", "Febrer", "Març", "Abril", "Maig", "Juny", "Juliol", "Agost", "Setembre", "Octubre", "Novembre", "Desembre"
+            ],
+            "weekdays": [
+                "Diumenge", "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte"
+            ]
+        },
+    "messages": {
+        "title": "Missatges",
+        "empty": "No hi ha comunicats",
+        "failedLoad": "No s'han pogut carregar els missatges.",
+        "form": {
+            "title": "Títol",
+            "body": "Missatge",
+            "publish": "Publicar comunicat",
+            "publishing": "Publicant…"
+        }
+    },
+    
+    "home": {
+        "greeting": {
+            "morning": "Bon dia",
+            "afternoon": "Bona tarda",
+            "evening": "Bona nit"
+        },
+        "welcome": "Benvingut/da",
+        "children": "Els teus fills/es",
+        "upcomingEvents": "Propers esdeveniments",
+        "announcements": "Comunicats"
+    },
+    "roles": {
+        "parent": "Pare/Mare",
+        "coach": "Entrenador/a",
+        "player": "Jugador/a",
+        "club_admin": "Administrador/a"
+    },
+    "eventTypes": {
+        "match": "Partit",
+        "training": "Entrenament"
+    },
+    "auth": {
+        "title": "ClubKit",
+        "welcome": "Benvingut de nou",
+        "createAccount": "Crea el teu compte",
+        "fullName": "Nom complet",
+        "fullNamePlaceholder": "Alex Johnson",
+        "email": "Correu electrònic",
+        "emailPlaceholder": "el.teu@email.com",
+        "password": "Contrasenya",
+        "passwordPlaceholder": "••••••••",
+        "signIn": "Inicia sessió",
+        "createAccountBtn": "Crear compte",
+        "noAccount": "No tens compte?",
+        "signUp": "Registra't",
+        "hasAccount": "Ja tens compte?",
+        "terms": "En continuar, acceptes els nostres Termes del servei i Política de privacitat",
+        "pleaseFill": "Si us plau, omple tots els camps",
+        "pleaseName": "Si us plau, introdueix el teu nom",
+        "invalidCredentials": "Credencials invàlides. Torna-ho a provar."
+    },
+    "teams": {
+        "title": "Equips",
+        "empty": "No hi ha equips assignats",
+        "coachSubtitle": "Equips que entrenes",
+        "userSubtitle": "Els teus equips",
+        "quickRoster": "Plantilla ràpida",
+        "born": "Nascut el {{year}}",
+        "na": "N/D"
+    },
+    
+    "eventDetail": {
+        "notFound": "Esdeveniment no trobat",
+        "attendance": "Assistència",
+        "teams": "Equip: {{teams}}",
+        "present": "Present",
+        "absent": "Absent",
+        "status": {
+            "present": "Present",
+            "absent": "Absent",
+            "unknown": "Desconegut"
+        },
+        "date": "{{start}} – {{end}}"
+    },
+    "profile": {
+        "accountSettings": "Configuració del compte",
+        "privacy": "Privacitat",
+        "helpSupport": "Ajuda i suport",
+        "demoSwitchRole": "Demo: Canvia el rol",
+        "language": "Idioma",
+        "signOut": "Tanca sessió",
+        "version": "ClubKit v{{version}}"
+    }
+}

@@ -1,74 +1,118 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { mockMessages } from '@/data/mockData';
-import { Bell, AlertCircle } from 'lucide-react';
-import { format } from 'date-fns';
-
+import { Spinner } from '@/components/ui/spinner'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/lib/supabase'
+import { useTranslation } from 'react-i18next'
 export default function Messages() {
-  const sortedMessages = [...mockMessages].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  const { role, clubId } = useAuth()
+  const { t } = useTranslation()
+  const [messages, setMessages] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const [title, setTitle] = useState('')
+  const [body, setBody] = useState('')
+  const [creating, setCreating] = useState(false)
+
+// 🔹 Load messages
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true)
+      setError(null)
+
+      const { data, error } = await supabase
+        .from('messages')
+        .select('id, title, body, created_at')
+        .order('created_at', { ascending: false })
+
+      if (error) setError('messages.failedLoad')
+      setMessages(data || [])
+      setLoading(false)
+    }
+
+    load()
+  }, [])
+
+  // 🔹 Create message (coach / admin)
+  const handleCreateMessage = async () => {
+    if (!clubId) return
+    if (role !== 'coach' && role !== 'club_admin') return
+    if (!title || !body) return
+
+    setCreating(true)
+
+    const { error } = await supabase.from('messages').insert({
+      club_id: clubId,
+      team_id: null,
+      title,
+      body,
+    })
+
+    setCreating(false)
+
+    if (!error) {
+      setTitle('')
+      setBody('')
+      // reload messages
+      const { data } = await supabase
+        .from('messages')
+        .select('id, title, body, created_at')
+        .order('created_at', { ascending: false })
+      setMessages(data || [])
+    }
+  }
+
+  if (loading) return <Spinner />
+  if (error) return <div>{t(error)}</div>
 
   return (
     <div className="px-4 pt-6 pb-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-foreground">Messages</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Official announcements from your club
-        </p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">{t('messages.title')}</h1>
       </div>
 
-      {/* Messages List */}
-      <div className="space-y-3">
-        {sortedMessages.map((message) => (
-          <Card key={message.id} className="shadow-card">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                  message.priority === 'important' 
-                    ? 'bg-destructive/10 text-destructive' 
-                    : 'bg-secondary text-muted-foreground'
-                }`}>
-                  {message.priority === 'important' ? (
-                    <AlertCircle className="w-5 h-5" />
-                  ) : (
-                    <Bell className="w-5 h-5" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    {message.priority === 'important' && (
-                      <Badge variant="destructive" className="text-xs">
-                        Important
-                      </Badge>
-                    )}
-                    {message.teamId && (
-                      <Badge variant="secondary" className="text-xs">
-                        Team
-                      </Badge>
-                    )}
-                    {message.clubId && !message.teamId && (
-                      <Badge variant="outline" className="text-xs">
-                        Club-wide
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="font-medium text-foreground">{message.title}</p>
-                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                    {message.content}
-                  </p>
-                  <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
-                    <span>{message.authorName}</span>
-                    <span>•</span>
-                    <span>{format(new Date(message.createdAt), 'MMM d, h:mm a')}</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* 🔹 Create message */}
+      {(role === 'coach' || role === 'club_admin') && (
+        <div className="space-y-2 border rounded-lg p-4">
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder={t('messages.form.title')}
+            className="w-full border px-3 py-2 rounded-md"
+          />
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder={t('messages.form.body')}
+            className="w-full border px-3 py-2 rounded-md"
+          />
+          <button
+            onClick={handleCreateMessage}
+            disabled={creating}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium"
+          >
+            {creating ? t('messages.form.publishing') : t('messages.form.publish')}
+          </button>
+        </div>
+      )}
+
+      {/* 🔹 Empty state */}
+      {messages.length === 0 && (
+        <div className="text-center text-muted-foreground py-10">
+          {t('messages.empty')}
+        </div>
+      )}
+
+      {/* 🔹 Messages list */}
+      {messages.map((m) => (
+        <article key={m.id} className="border-b pb-4">
+          <h3 className="font-semibold">{m.title}</h3>
+          <p className="text-muted-foreground">{m.body}</p>
+          <span className="text-xs text-muted-foreground">
+            {new Date(m.created_at).toLocaleString()}
+          </span>
+        </article>
+      ))}
     </div>
-  );
+  )
 }

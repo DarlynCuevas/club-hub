@@ -1,42 +1,50 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
-
+import { useLocation } from 'react-router-dom';
 export default function Auth() {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  
+  const location = useLocation();
+
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  e.preventDefault();
+  setError('');
 
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
+  if (!email || !password) {
+    setError('Please fill in all fields');
+    return;
+  }
 
-    if (!isLogin && !name) {
-      setError('Please enter your name');
-      return;
-    }
+  if (!isLogin && !name) {
+    setError('Please enter your name');
+    return;
+  }
 
-    try {
-      await login(email, password);
-      navigate('/home');
-    } catch (err) {
-      setError('Invalid credentials. Please try again.');
-    }
-  };
+  try {
+    await login(email, password);
+
+    const redirectTo =
+      (location.state as any)?.from || '/home';
+
+    navigate(redirectTo, { replace: true });
+  } catch (err) {
+    setError('Invalid credentials. Please try again.');
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -59,9 +67,9 @@ export default function Auth() {
                 <path d="M12 6v6l4 2" />
               </svg>
             </div>
-            <h1 className="text-2xl font-semibold text-foreground">ClubKit</h1>
+            <h1 className="text-2xl font-semibold text-foreground">{t('auth.title')}</h1>
             <p className="text-muted-foreground mt-2">
-              {isLogin ? 'Welcome back' : 'Create your account'}
+              {isLogin ? t('auth.welcome') : t('auth.createAccount')}
             </p>
           </div>
 
@@ -70,12 +78,12 @@ export default function Auth() {
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-sm font-medium">
-                  Full Name
+                  {t('auth.fullName')}
                 </Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Alex Johnson"
+                  placeholder={t('auth.fullNamePlaceholder')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="h-12 bg-card"
@@ -85,12 +93,12 @@ export default function Auth() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-medium">
-                Email
+                {t('auth.email')}
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t('auth.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-12 bg-card"
@@ -99,12 +107,12 @@ export default function Auth() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium">
-                Password
+                {t('auth.password')}
               </Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t('auth.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 bg-card"
@@ -112,7 +120,7 @@ export default function Auth() {
             </div>
 
             {error && (
-              <p className="text-sm text-destructive">{error}</p>
+              <p className="text-sm text-destructive">{t(error)}</p>
             )}
 
             <Button
@@ -123,9 +131,9 @@ export default function Auth() {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : isLogin ? (
-                'Sign In'
+                t('auth.signIn')
               ) : (
-                'Create Account'
+                t('auth.createAccountBtn')
               )}
             </Button>
           </form>
@@ -142,13 +150,13 @@ export default function Auth() {
             >
               {isLogin ? (
                 <>
-                  Don't have an account?{' '}
-                  <span className="text-primary font-medium">Sign up</span>
+                  {t('auth.noAccount')}{' '}
+                  <span className="text-primary font-medium">{t('auth.signUp')}</span>
                 </>
               ) : (
                 <>
-                  Already have an account?{' '}
-                  <span className="text-primary font-medium">Sign in</span>
+                  {t('auth.hasAccount')}{' '}
+                  <span className="text-primary font-medium">{t('auth.signIn')}</span>
                 </>
               )}
             </button>
@@ -159,7 +167,7 @@ export default function Auth() {
       {/* Footer */}
       <div className="px-6 py-6 text-center">
         <p className="text-xs text-muted-foreground">
-          By continuing, you agree to our Terms of Service and Privacy Policy
+          {t('auth.terms')}
         </p>
       </div>
     </div>

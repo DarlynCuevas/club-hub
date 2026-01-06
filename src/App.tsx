@@ -12,15 +12,24 @@ import Messages from "./pages/Messages";
 import Teams from "./pages/Teams";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-
+import EventDetail from "./pages/EventDetail";
+import AdminEvents from "./pages/admin/Events";
+import { useLocation } from 'react-router-dom';
+import { ToastProvider, ToastViewport } from "@/components/ui/toast"
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
-  
+  const location = useLocation();
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  return (
+    <Navigate
+      to="/"
+      replace
+      state={{ from: location.pathname }}
+    />
+  );
+}
   
   return <>{children}</>;
 }
@@ -46,6 +55,9 @@ function AppRoutes() {
         <Route path="/messages" element={<Messages />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/events/:eventId" element={<EventDetail />} />
+        <Route path="/admin/events" element={<AdminEvents />} />
+
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

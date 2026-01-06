@@ -1,0 +1,106 @@
+ { 
+  "adminEvents": {
+    "title": "Eventos",
+    "new": "Nuevo evento",
+    "noAccess": "No tienes acceso a esta sección",
+    "listPlaceholder": "La lista de eventos aparecerá aquí"
+  },
+
+    "calendar": {
+      "title": "Calendario",
+      "days": ["D", "L", "M", "X", "J", "V", "S"],
+      "noEvents": "No hay eventos programados",
+      "months": [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+      ],
+      "weekdays": [
+        "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
+      ]
+    },
+  "messages": {
+    "title": "Mensajes",
+    "empty": "No hay comunicados",
+    "failedLoad": "No se pudieron cargar los mensajes.",
+    "form": {
+      "title": "Título",
+      "body": "Mensaje",
+      "publish": "Publicar comunicado",
+      "publishing": "Publicando…"
+    }
+  },
+
+  "home": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "welcome": "Bienvenido/a",
+    "children": "Tus hijos/as",
+    "upcomingEvents": "Próximos eventos",
+    "announcements": "Comunicados"
+  },
+  "roles": {
+    "parent": "Padre/Madre",
+    "coach": "Entrenador/a",
+    "player": "Jugador/a",
+    "club_admin": "Administrador/a"
+  },
+    "eventTypes": {
+      "match": "Partido",
+      "training": "Entrenamiento"
+    },
+  "auth": {
+    "title": "ClubKit",
+    "welcome": "Bienvenido de nuevo",
+    "createAccount": "Crea tu cuenta",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Alex Johnson",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Iniciar sesión",
+    "createAccountBtn": "Crear cuenta",
+    "noAccount": "¿No tienes cuenta?",
+    "signUp": "Regístrate",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "terms": "Al continuar, aceptas nuestros Términos de servicio y Política de privacidad",
+    "pleaseFill": "Por favor, completa todos los campos",
+    "pleaseName": "Por favor, ingresa tu nombre",
+    "invalidCredentials": "Credenciales inválidas. Intenta de nuevo."
+  },
+  "teams": {
+    "title": "Equipos",
+    "empty": "No hay equipos asignados",
+    "coachSubtitle": "Equipos que entrenas",
+    "userSubtitle": "Tus equipos",
+    "quickRoster": "Plantilla rápida",
+    "born": "Nacido en {{year}}",
+    "na": "N/D"
+  },
+  "profile": {
+  },
+  "eventDetail": {
+    "notFound": "Evento no encontrado",
+    "attendance": "Asistencia",
+    "teams": "Equipo: {{teams}}",
+    "present": "Presente",
+    "absent": "Ausente",
+    "status": {
+      "present": "Presente",
+      "absent": "Ausente",
+      "unknown": "Desconocido"
+    },
+    "date": "{{start}} – {{end}}"
+  },
+  "profile": {
+    "accountSettings": "Configuración de la cuenta",
+    "privacy": "Privacidad",
+    "helpSupport": "Ayuda y soporte",
+    "demoSwitchRole": "Demo: Cambiar rol",
+    "language": "Idioma",
+    "signOut": "Cerrar sesión",
+    "version": "ClubKit v{{version}}"
+  }
+}

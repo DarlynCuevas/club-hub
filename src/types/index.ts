@@ -1,8 +1,10 @@
+import { User } from "@supabase/supabase-js";
+
 // User roles in the system
 export type UserRole = 'super_admin' | 'club_admin' | 'center_admin' | 'coach' | 'parent' | 'player';
 
 // Core entities
-export interface User {
+export interface AppUser {
   id: string;
   email: string;
   firstName: string;
@@ -46,17 +48,16 @@ export interface Player {
   createdAt: string;
 }
 
-export interface Event {
-  id: string;
-  teamId: string;
-  title: string;
-  description?: string;
-  type: 'training' | 'match' | 'meeting' | 'other';
-  startTime: string;
-  endTime: string;
-  location?: string;
-  createdAt: string;
+export interface EventDB {
+  id: string
+  title: string
+  start_time: string
+  cancelled?: boolean
+  end_time: string
+  event_type: 'training' | 'match' | 'meeting' | 'other'
+  teams: { name: string }[]
 }
+
 
 export interface Message {
   id: string;
@@ -70,9 +71,11 @@ export interface Message {
   createdAt: string;
 }
 
+
+
 // Auth context types
 export interface AuthState {
-  user: User | null;
+  user: AppUser | null;
   role: UserRole;
   clubId?: string;
   isAuthenticated: boolean;

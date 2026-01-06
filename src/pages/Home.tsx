@@ -1,39 +1,100 @@
+import { Spinner } from '@/components/ui/spinner';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getUpcomingEvents, getRecentMessages, mockPlayers, mockClub } from '@/data/mockData';
 import { Calendar, MapPin, User, Bell } from 'lucide-react';
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { supabase } from '@/lib/supabase';
 
 export default function Home() {
-  const { user, role } = useAuth();
-  const upcomingEvents = getUpcomingEvents(3);
-  const recentMessages = getRecentMessages(2);
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState(true);
+  const { user, role, clubId } = useAuth();
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [recentMessages, setRecentMessages] = useState([]);
+  const [players, setPlayers] = useState([]);
+  const [club, setClub] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      // Fetch upcoming events
+      const { data: eventsData, error: eventsError } = await supabase
+        .from('events')
+        .select('*')
+        .gt('start_time', new Date().toISOString())
+        .order('start_time', { ascending: true })
+        .limit(3);
+      if (!eventsError && eventsData) {
+        setUpcomingEvents(
+          eventsData.map(e => ({
+            ...e,
+            startTime: e.start_time,
+            endTime: e.end_time,
+            type: e.event_type,
+          }))
+        );
+      }
+
+      // Fetch recent messages
+      const { data: messagesData, error: messagesError } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(2);
+      if (!messagesError) setRecentMessages(messagesData || []);
+
+      // Fetch players (for parent role)
+      if (role === 'parent' && user) {
+        const { data: playersData, error: playersError } = await supabase
+          .from('players')
+          .select('*')
+          .eq('parent_id', user.id);
+        if (!playersError) setPlayers(playersData || []);
+      }
+
+      // Fetch club info
+      if (clubId) {
+        const { data: clubData, error: clubError } = await supabase
+          .from('clubs')
+          .select('*')
+          .eq('id', clubId)
+          .maybeSingle();
+        if (!clubError) setClub(clubData);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [role, user, clubId]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 18) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return t('home.greeting.morning');
+    if (hour < 18) return t('home.greeting.afternoon');
+    return t('home.greeting.evening');
   };
 
+  if (loading) return <Spinner />;
   return (
     <div className="px-4 pt-6 pb-6 space-y-6">
       {/* Header */}
       <div className="space-y-1">
         <p className="text-muted-foreground text-sm">{getGreeting()}</p>
         <h1 className="text-2xl font-semibold text-foreground">
-          {user?.firstName || 'Welcome'}
+          {user?.firstName || t('home.welcome')}
         </h1>
       </div>
 
-      {/* Role indicator for demo */}
+      {/* Role indicator */}
       <div className="flex items-center gap-2">
         <Badge variant="secondary" className="capitalize">
-          {role}
+          {t(`roles.${role}`)}
         </Badge>
         <span className="text-sm text-muted-foreground">
-          {mockClub.name}
+          {club?.name || ''}
         </span>
       </div>
 
@@ -41,10 +102,10 @@ export default function Home() {
       {role === 'parent' && (
         <section className="space-y-3">
           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-            Your Children
+            {t('home.children')}
           </h2>
           <div className="grid gap-3">
-            {mockPlayers.map((player) => (
+            {players.map((player) => (
               <Card key={player.id} className="shadow-card">
                 <CardContent className="p-4 flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
@@ -54,7 +115,7 @@ export default function Home() {
                     <p className="font-medium text-foreground">
                       {player.firstName} {player.lastName}
                     </p>
-                    <p className="text-sm text-muted-foreground">U12 Blue</p>
+                    <p className="text-sm text-muted-foreground">{player.teamName || ''}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -66,7 +127,7 @@ export default function Home() {
       {/* Upcoming Events */}
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-          Upcoming Events
+          {t('home.upcomingEvents')}
         </h2>
         <div className="space-y-3">
           {upcomingEvents.map((event) => (
@@ -87,7 +148,7 @@ export default function Home() {
                         variant={event.type === 'match' ? 'default' : 'secondary'}
                         className="text-xs capitalize"
                       >
-                        {event.type}
+                        {t(`eventTypes.${event.type}`)}
                       </Badge>
                     </div>
                     <p className="font-medium text-foreground truncate">
@@ -116,7 +177,7 @@ export default function Home() {
       {/* Announcements */}
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-          Announcements
+          {t('home.announcements')}
         </h2>
         <div className="space-y-3">
           {recentMessages.map((message) => (

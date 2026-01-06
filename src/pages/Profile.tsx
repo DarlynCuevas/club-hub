@@ -1,29 +1,70 @@
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/contexts/AuthContext';
-import { mockClub } from '@/data/mockData';
-import { User, LogOut, Settings, HelpCircle, Shield, ChevronRight } from 'lucide-react';
-import { UserRole } from '@/types';
+import { useNavigate } from 'react-router-dom'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/contexts/AuthContext'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { supabase } from '@/lib/supabase'
+import {
+  User,
+  LogOut,
+  Settings,
+  HelpCircle,
+  Shield,
+  ChevronRight,
+  Calendar,
+} from 'lucide-react'
+import { UserRole } from '@/types'
+import LanguageSwitcher from '@/components/ui/language'
 
 export default function Profile() {
-  const { user, role, setRole, logout } = useAuth();
-  const navigate = useNavigate();
+  const { t } = useTranslation()
+  const { user, role, setRole, logout, clubId } = useAuth()
+  const navigate = useNavigate()
+  const [club, setClub] = useState<{ name: string } | null>(null)
+
+  useEffect(() => {
+    async function fetchClub() {
+      if (!clubId) return
+
+      const { data, error } = await supabase
+        .from('clubs')
+        .select('name')
+        .eq('id', clubId)
+        .maybeSingle()
+
+      if (!error) setClub(data)
+    }
+
+    fetchClub()
+  }, [clubId])
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+    logout()
+    navigate('/')
+  }
 
   // Role switcher for demo purposes
-  const roles: UserRole[] = ['parent', 'coach', 'player'];
+  const roles: UserRole[] = ['parent', 'coach', 'player']
+  const canManageEvents =
+    role === 'club_admin' || role === 'coach'
 
   const menuItems = [
-    { icon: Settings, label: 'Account Settings', action: () => {} },
-    { icon: Shield, label: 'Privacy', action: () => {} },
-    { icon: HelpCircle, label: 'Help & Support', action: () => {} },
+    ...(canManageEvents
+      ? [
+        {
+          icon: Calendar,
+          label: 'Manage events',
+          action: () => navigate('/admin/events'),
+        },
+      ]
+      : []),
+    { icon: Settings, label: 'Account Settings', action: () => { } },
+    { icon: Shield, label: 'Privacy', action: () => { } },
+    { icon: HelpCircle, label: 'Help & Support', action: () => { } },
   ];
+
 
   return (
     <div className="px-4 pt-6 pb-6 space-y-6">
@@ -44,7 +85,7 @@ export default function Profile() {
                   {role}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
-                  {mockClub.name}
+                  {club?.name || ''}
                 </span>
               </div>
             </div>
@@ -55,7 +96,7 @@ export default function Profile() {
       {/* Role Switcher (Demo) */}
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-          Demo: Switch Role
+          {t('profile.demoSwitchRole')}
         </h2>
         <Card className="shadow-card">
           <CardContent className="p-2">
@@ -68,13 +109,23 @@ export default function Profile() {
                   onClick={() => setRole(r)}
                   className="flex-1 capitalize"
                 >
-                  {r}
+                  {t(`roles.${r}`)}
                 </Button>
               ))}
             </div>
           </CardContent>
         </Card>
       </section>
+
+      {/* Language */}
+      <Card className="shadow-card">
+        <CardContent className="p-4 space-y-2">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+            {t('profile.language')}
+          </h2>
+          <LanguageSwitcher />
+        </CardContent>
+      </Card>
 
       {/* Menu Items */}
       <Card className="shadow-card">
@@ -86,7 +137,9 @@ export default function Profile() {
               className="w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors text-left"
             >
               <item.icon className="w-5 h-5 text-muted-foreground" />
-              <span className="flex-1 font-medium text-foreground">{item.label}</span>
+              <span className="flex-1 font-medium text-foreground">
+                {item.label}
+              </span>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
           ))}
@@ -100,13 +153,13 @@ export default function Profile() {
         onClick={handleLogout}
       >
         <LogOut className="w-5 h-5 mr-2" />
-        Sign Out
+        {t('profile.signOut')}
       </Button>
 
       {/* App Version */}
       <p className="text-center text-xs text-muted-foreground">
-        ClubKit v1.0.0
+        {t('profile.version', { version: '1.0.0' })}
       </p>
     </div>
-  );
+  )
 }

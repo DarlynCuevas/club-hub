@@ -1,0 +1,106 @@
+ { 
+  "adminEvents": {
+    "title": "Events",
+    "new": "New event",
+    "noAccess": "You don’t have access to this section",
+    "listPlaceholder": "Event list will go here"
+  },
+
+    "calendar": {
+      "title": "Calendar",
+      "days": ["S", "M", "T", "W", "T", "F", "S"],
+      "noEvents": "No events scheduled",
+      "months": [
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+      ],
+      "weekdays": [
+        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+      ]
+    },
+  "messages": {
+    "title": "Messages",
+    "empty": "No announcements",
+    "failedLoad": "Failed to load messages.",
+    "form": {
+      "title": "Title",
+      "body": "Message",
+      "publish": "Publish announcement",
+      "publishing": "Publishing…"
+    }
+  },
+  
+  "home": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "welcome": "Welcome",
+    "children": "Your Children",
+    "upcomingEvents": "Upcoming Events",
+    "announcements": "Announcements"
+  },
+  "roles": {
+    "parent": "Parent",
+    "coach": "Coach",
+    "player": "Player",
+    "club_admin": "Club Admin"
+  },
+  "eventTypes": {
+    "match": "Match",
+    "training": "Training"
+  },
+  "auth": {
+    "title": "ClubKit",
+    "welcome": "Welcome back",
+    "createAccount": "Create your account",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Alex Johnson",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Sign In",
+    "createAccountBtn": "Create Account",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "hasAccount": "Already have an account?",
+    "terms": "By continuing, you agree to our Terms of Service and Privacy Policy",
+    "pleaseFill": "Please fill in all fields",
+    "pleaseName": "Please enter your name",
+    "invalidCredentials": "Invalid credentials. Please try again."
+  },
+  "teams": {
+    "title": "Teams",
+    "empty": "No teams assigned",
+    "coachSubtitle": "Teams you coach",
+    "userSubtitle": "Your teams",
+    "quickRoster": "Quick roster",
+    "born": "Born {{year}}",
+    "na": "N/A"
+  },
+  "profile": {
+  },
+  "eventDetail": {
+    "notFound": "Event not found",
+    "attendance": "Attendance",
+    "teams": "Team: {{teams}}",
+    "present": "Present",
+    "absent": "Absent",
+    "status": {
+      "present": "Present",
+      "absent": "Absent",
+      "unknown": "Unknown"
+    },
+    "date": "{{start}} – {{end}}"
+  },
+   "profile": {
+    "accountSettings": "Account Settings",
+    "privacy": "Privacy",
+    "helpSupport": "Help & Support",
+    "demoSwitchRole": "Demo: Switch Role",
+    "language": "Language",
+    "signOut": "Sign Out",
+    "version": "ClubKit v{{version}}"
+  }
+}
