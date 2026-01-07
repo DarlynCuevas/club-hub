@@ -7,6 +7,7 @@ import {
 } from 'react'
 import { AppUser, UserRole, AuthState } from '@/types'
 import { supabase } from '@/lib/supabase'
+console.log('AUTH SUPABASE CLIENT', supabase)
 import i18n from '@/i18n'
 
 interface AuthContextType extends AuthState {

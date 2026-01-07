@@ -70,7 +70,7 @@ export default function Home() {
         const { data: playersData, error: playersError } = await supabase
           .from('players')
           .select('*')
-          .eq('parent_id', user.id);
+          .eq('parent_user_id', user.id);
         if (!playersError) setPlayers(playersData || []);
       }
 

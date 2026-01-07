@@ -11,6 +11,7 @@ import CalendarPage from "./pages/CalendarPage";
 import Messages from "./pages/Messages";
 import Teams from "./pages/Teams";
 import Profile from "./pages/Profile";
+import PlayerDashboard from "./pages/dashboard/player/PlayerDashboard";
 import NotFound from "./pages/NotFound";
 import EventDetail from "./pages/EventDetail";
 import AdminEvents from "./pages/admin/Events";
@@ -58,6 +59,7 @@ function AppRoutes() {
         <Route path="/messages" element={<Messages />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/player/dashboard" element={<PlayerDashboard />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/teams" element={<Teams />} />
@@ -77,7 +79,6 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AppRoutes />
-       
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
