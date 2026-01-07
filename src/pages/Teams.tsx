@@ -52,12 +52,11 @@ export default function Teams() {
   }, [role, user])
 
   const loadTeamPlayers = async (teamId: string) => {
-    console.log('LOADING PLAYERS FOR TEAM', teamId)
     setLoadingTeamId(teamId)
     const { data, error } = await supabase
       .from('team_players')
       .select(`
-        players (
+        player:players!team_players_player_id_fkey (
           id,
           full_name,
           birth_date
@@ -65,10 +64,10 @@ export default function Teams() {
       `)
       .eq('team_id', teamId)
 
-    if (!error) {
+    if (!error && data) {
       setTeamPlayers(prev => ({
         ...prev,
-        [teamId]: data?.map(row => row.players) ?? [],
+        [teamId]: data.flatMap(row => row.player) ?? [],
       }))
     }
 

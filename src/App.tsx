@@ -17,6 +17,7 @@ import AdminEvents from "./pages/admin/Events";
 import TeamDetailAdmin from "./pages/admin/TeamDetailAdmin";
 import { useLocation } from 'react-router-dom';
 import { ToastProvider, ToastViewport } from "@/components/ui/toast"
+import Players from "./pages/Players";
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -30,6 +31,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
       state={{ from: location.pathname }}
     />
   );
+
 }
   
   return <>{children}</>;
@@ -60,7 +62,7 @@ function AppRoutes() {
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/teams" element={<Teams />} />
         <Route path="/admin/teams/:teamId" element={<TeamDetailAdmin />} />
-
+        <Route path="/players" element={<Players />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
@@ -75,6 +77,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AppRoutes />
+       
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

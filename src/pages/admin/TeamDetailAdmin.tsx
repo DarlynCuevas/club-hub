@@ -79,7 +79,7 @@ export default function TeamDetailAdmin() {
 			const { data: playersData, error: playersError } = await supabase
 				.from('team_players')
 				.select(`
-					players (
+					player:players!team_players_player_fk (
 						id,
 						full_name,
 						birth_date
@@ -87,8 +87,10 @@ export default function TeamDetailAdmin() {
 				`)
 				.eq('team_id', teamId)
 
+			console.log('playersData', playersData)
 			if (!playersError) {
-				setPlayers(playersData?.flatMap(r => r.players) || [])
+				const players = (playersData || []).flatMap((item: any) => item.player)
+				setPlayers(players)
 			}
 
 			setLoading(false)
@@ -131,7 +133,7 @@ export default function TeamDetailAdmin() {
 		const { data: playersData, error: playersError } = await supabase
 			.from('team_players')
 			.select(`
-				players (
+				player:players!team_players_player_fk (
 					id,
 					full_name,
 					birth_date
@@ -139,8 +141,10 @@ export default function TeamDetailAdmin() {
 			`)
 			.eq('team_id', teamId)
 
+		console.log('playersData', playersData)
 		if (!playersError) {
-			setPlayers(playersData?.flatMap(r => r.players) || [])
+			const players = (playersData || []).flatMap((item: any) => item.player)
+			setPlayers(players)
 		}
 	}
 
