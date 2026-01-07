@@ -46,6 +46,7 @@ export interface Player {
   birthDate?: string;
   avatarUrl?: string;
   createdAt: string;
+  user_id?: string | null
 }
 
 export interface EventDB {

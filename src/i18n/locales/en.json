@@ -77,7 +77,11 @@
     "userSubtitle": "Your teams",
     "quickRoster": "Quick roster",
     "born": "Born {{year}}",
-    "na": "N/A"
+    "na": "N/A",
+    "players": "Players"
+  },
+  "common": {
+    "back": "Back"
   },
   "profile": {
   },

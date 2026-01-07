@@ -77,7 +77,11 @@
     "userSubtitle": "Tus equipos",
     "quickRoster": "Plantilla rápida",
     "born": "Nacido en {{year}}",
-    "na": "N/D"
+    "na": "N/D",
+    "players": "Jugadores"
+  },
+  "common": {
+    "back": "Atrás"
   },
   "profile": {
   },

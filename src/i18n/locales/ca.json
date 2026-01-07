@@ -77,7 +77,8 @@
         "userSubtitle": "Els teus equips",
         "quickRoster": "Plantilla ràpida",
         "born": "Nascut el {{year}}",
-        "na": "N/D"
+           "na": "N/D",
+           "players": "Jugadors"
     },
     
     "eventDetail": {
@@ -92,6 +93,9 @@
             "unknown": "Desconegut"
         },
         "date": "{{start}} – {{end}}"
+    },
+    "common": {
+        "back": "Enrere"
     },
     "profile": {
         "accountSettings": "Configuració del compte",
