@@ -17,29 +17,52 @@ import {
 } from 'lucide-react'
 import { UserRole } from '@/types'
 import LanguageSwitcher from '@/components/ui/language'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useState as useReactState } from 'react'
 
 export default function Profile() {
   const { t } = useTranslation()
   const { user, role, setRole, logout, clubId } = useAuth()
   const navigate = useNavigate()
-  const [club, setClub] = useState<{ name: string } | null>(null)
+  const [club, setClub] = useState<{ name: string, logo_url?: string, primary_color?: string } | null>(null)
+  const [editOpen, setEditOpen] = useState(false)
+  const [editName, setEditName] = useState('')
+  const [editLogo, setEditLogo] = useState('')
+  const [editColor, setEditColor] = useState('')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     async function fetchClub() {
       if (!clubId) return
 
-      const { data, error } = await supabase
-        .from('clubs')
-        .select('name')
-        .eq('id', clubId)
-        .maybeSingle()
-
-      if (!error) setClub(data)
+        const { data, error } = await supabase
+          .from('clubs')
+          .select('name, logo_url, primary_color')
+          .eq('id', clubId)
+          .maybeSingle()
+        if (!error && data) setClub(data)
+        if (data) {
+          setEditName(data.name || '')
+          setEditLogo(data.logo_url || '')
+          setEditColor(data.primary_color || '')
+        }
     }
 
     fetchClub()
   }, [clubId])
 
+    const handleEditClub = async () => {
+      setSaving(true)
+      const { error } = await supabase
+        .from('clubs')
+        .update({ name: editName, logo_url: editLogo, primary_color: editColor })
+        .eq('id', clubId)
+      setSaving(false)
+      if (!error) {
+        setClub({ ...club, name: editName, logo_url: editLogo, primary_color: editColor })
+        setEditOpen(false)
+      }
+    }
   const handleLogout = () => {
     logout()
     navigate('/')
@@ -50,6 +73,7 @@ export default function Profile() {
   const canManageEvents =
     role === 'super_admin' || role === 'coach'
 
+  const [accountOpen, setAccountOpen] = useReactState(false)
   const menuItems = [
     ...(canManageEvents
       ? [
@@ -60,7 +84,11 @@ export default function Profile() {
         },
       ]
       : []),
-    { icon: Settings, label: 'Account Settings', action: () => { } },
+    {
+      icon: Settings,
+      label: 'Account Settings',
+      action: () => setAccountOpen((v) => !v),
+    },
     { icon: Shield, label: 'Privacy', action: () => { } },
     { icon: HelpCircle, label: 'Help & Support', action: () => { } },
   ];
@@ -72,9 +100,13 @@ export default function Profile() {
       <Card className="shadow-card">
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="w-8 h-8 text-primary" />
-            </div>
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                {club?.logo_url ? (
+                  <img src={club.logo_url} alt="Club logo" className="w-12 h-12 object-contain" />
+                ) : (
+                  <User className="w-8 h-8 text-primary" />
+                )}
+              </div>
             <div className="flex-1">
               <h1 className="text-xl font-semibold text-foreground">
                 {user?.firstName} {user?.lastName}
@@ -93,6 +125,54 @@ export default function Profile() {
         </CardContent>
       </Card>
 
+        {/* Modal Editar Club */}
+        {role === 'super_admin' && (
+          <Dialog open={editOpen} onOpenChange={setEditOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Editar club</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Nombre del club</label>
+                  <input
+                    className="w-full border rounded px-3 py-2"
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Logo (URL)</label>
+                  <input
+                    className="w-full border rounded px-3 py-2"
+                    value={editLogo}
+                    onChange={e => setEditLogo(e.target.value)}
+                  />
+                  {editLogo && (
+                    <img src={editLogo} alt="Preview" className="mt-2 w-16 h-16 object-contain" />
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Color principal</label>
+                  <input
+                    className="w-full border rounded px-3 py-2"
+                    value={editColor}
+                    onChange={e => setEditColor(e.target.value)}
+                    placeholder="#123456"
+                  />
+                </div>
+                <div className="flex gap-2 mt-4">
+                  <Button onClick={handleEditClub} disabled={saving}>
+                    {saving ? 'Guardando...' : 'Guardar'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setEditOpen(false)}>
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       {/* Role Switcher (Demo) */}
       <section className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
@@ -131,17 +211,26 @@ export default function Profile() {
       <Card className="shadow-card">
         <CardContent className="p-0 divide-y divide-border">
           {menuItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={item.action}
-              className="w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors text-left"
-            >
-              <item.icon className="w-5 h-5 text-muted-foreground" />
-              <span className="flex-1 font-medium text-foreground">
-                {item.label}
-              </span>
-              <ChevronRight className="w-5 h-5 text-muted-foreground" />
-            </button>
+            <div key={item.label}>
+              <button
+                onClick={item.action}
+                className="w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors text-left"
+              >
+                <item.icon className="w-5 h-5 text-muted-foreground" />
+                <span className="flex-1 font-medium text-foreground">
+                  {item.label}
+                </span>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </button>
+              {/* Account Settings dropdown */}
+              {item.label === 'Account Settings' && accountOpen && role === 'super_admin' && (
+                <div className="bg-muted/10 p-4">
+                  <Button variant="outline" onClick={() => setEditOpen(true)}>
+                    Editar club
+                  </Button>
+                </div>
+              )}
+            </div>
           ))}
         </CardContent>
       </Card>

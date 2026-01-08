@@ -1,6 +1,7 @@
 import { Spinner } from '@/components/ui/spinner';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useClub } from '@/contexts/ClubContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, User, Bell } from 'lucide-react';
@@ -13,10 +14,10 @@ export default function Home() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const { user, role, clubId } = useAuth();
+  const { club } = useClub();
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [recentMessages, setRecentMessages] = useState([]);
   const [players, setPlayers] = useState([]);
-  const [club, setClub] = useState(null);
 
   useEffect(() => {
     const load = async () => {
@@ -47,7 +48,7 @@ export default function Home() {
           title,
           body,
           created_at,
-          users_profile (
+          users_profile:author_id (
             full_name
           )
         `)
@@ -74,15 +75,7 @@ export default function Home() {
         if (!playersError) setPlayers(playersData || []);
       }
 
-      // Fetch club info
-      if (clubId) {
-        const { data: clubData, error: clubError } = await supabase
-          .from('clubs')
-          .select('*')
-          .eq('id', clubId)
-          .maybeSingle();
-        if (!clubError) setClub(clubData);
-      }
+      // Club info now comes from ClubContext
       setLoading(false);
     };
     load();

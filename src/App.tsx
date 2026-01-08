@@ -31,7 +31,7 @@ import Players from "./pages/parent/Players";
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import { supabase } from "./lib/supabase";
 import Home from "./pages/admin/Home";
-
+import { ClubProvider } from "@/contexts/ClubContext";
 const queryClient = new QueryClient();
 
 /* =======================
@@ -172,14 +172,18 @@ function AppRoutes() {
 /* =======================
    APP ROOT
 ======================= */
+
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <AppRoutes />
+          <ClubProvider>
+            <Toaster />
+            <Sonner />
+            <AppRoutes />
+          </ClubProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
