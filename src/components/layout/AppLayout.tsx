@@ -8,9 +8,9 @@ export function AppLayout() {
   const location = useLocation();
 
   // Guard: block player from accessing anything except /reset-password
-  if (role === 'player' && forcePasswordReset && location.pathname !== '/reset-password') {
-    return <Navigate to="/reset-password" replace />;
-  }
+  // if (role === 'player' && forcePasswordReset && location.pathname !== '/reset-password') {
+  //   return <Navigate to="/reset-password" replace />;
+  // }
 
   return (
     <div className="min-h-screen bg-background">

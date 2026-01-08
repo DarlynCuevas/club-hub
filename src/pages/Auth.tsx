@@ -47,6 +47,7 @@ export default function Auth() {
             data: {
               signup_type: 'player',
               full_name: name,
+              temp_password: true,
             },
           },
         });

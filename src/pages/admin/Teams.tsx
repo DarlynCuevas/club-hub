@@ -85,7 +85,7 @@ export default function Teams() {
       }
       loadTeams()
     }
-  const { role, user } = useAuth()
+  const { role, user } = useAuth() as { role: import('@/types').UserRole; user: any };
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -99,9 +99,11 @@ export default function Teams() {
   const [name, setName] = useState('')
   const [season, setSeason] = useState('')
   const [creating, setCreating] = useState(false)
+  // Estado para expandir/cerrar jugadores por equipo
+  const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null)
   useEffect(() => {
     if (role === 'player') {
-      navigate('/dashboard/player', { replace: true })
+      navigate('/player/dashboard', { replace: true })
     }
   }, [role, navigate])
 
@@ -222,6 +224,8 @@ export default function Teams() {
         return
       }
 
+   
+
       const teamsMap = new Map<string, TeamWithPlayers>()
 
       data.forEach(row => {
@@ -258,7 +262,7 @@ export default function Teams() {
   ======================= */
   if (loading) return <Spinner />
   if (error) return <ErrorState message={error} />
-  if (teams.length === 0) return <Empty title={t('teams.empty')} />
+  if (teams.length === 0) return <Empty title={t('teams.empty', 'No hay equipos asignados')} />
 
   /* =======================
      RENDER
@@ -268,12 +272,12 @@ export default function Teams() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-foreground">
-          {t('teams.title')}
+          {t('teams.title', 'Equipos')}
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {role === 'coach'
-            ? t('teams.coachSubtitle')
-            : t('teams.userSubtitle')}
+            ? t('teams.coachSubtitle', 'Equipos que entrenas')
+            : t('teams.userSubtitle', 'Tus equipos')}
         </p>
       </div>
 
@@ -285,27 +289,27 @@ export default function Teams() {
               onClick={() => navigate('/centers')}
               className="px-4 py-2 bg-muted text-foreground rounded border border-border"
             >
-              Gestionar centers
+              {t('teams.manageCenters', 'Gestionar centers')}
             </button>
             <button
               onClick={() => navigate('/admin/players')}
               className="px-4 py-2 bg-muted text-foreground rounded border border-border"
             >
-              Gestionar jugadores
+              {t('teams.managePlayers', 'Gestionar jugadores')}
             </button>
             <button onClick={() => setOpenCreate(true)} className="px-4 py-2 bg-primary text-white rounded">
-              Crear equipo
+              {t('teams.createBtn', 'Crear equipo')}
             </button>
           </div>
           {openCreate && (
             <div className="mt-2 border border-gray-200 rounded bg-white p-6">
-              <h3 className="font-semibold mb-4">Crear equipo</h3>
+              <h3 className="font-semibold mb-4">{t('teams.new')}</h3>
               <select
                 value={clubId}
                 onChange={e => setClubId(e.target.value)}
                 className="block mb-2 px-2 py-1 border rounded w-full"
               >
-                <option value="">Selecciona un club</option>
+                <option value="">{t('teams.selectClub')}</option>
                 {clubs.map(club => (
                   <option key={club.id} value={club.id}>
                     {club.name}
@@ -314,24 +318,24 @@ export default function Teams() {
               </select>
               <input
                 type="text"
-                placeholder="Nombre del equipo"
+                placeholder={t('teams.namePlaceholder')}
                 value={name}
                 onChange={e => setName(e.target.value)}
                 className="block mb-2 px-2 py-1 border rounded w-full"
               />
               <input
                 type="text"
-                placeholder="Temporada (ej. 2025/2026)"
+                placeholder={t('teams.seasonPlaceholder')}
                 value={season}
                 onChange={e => setSeason(e.target.value)}
                 className="block mb-2 px-2 py-1 border rounded w-full"
               />
               <div className="mt-4 flex gap-2">
                 <button onClick={createTeam} disabled={creating} className="px-4 py-2 bg-primary text-white rounded">
-                  Crear
+                  {t('teams.createBtn')}
                 </button>
                 <button onClick={() => setOpenCreate(false)} className="px-4 py-2 bg-muted text-foreground rounded">
-                  Cancelar
+                  {t('common.back')}
                 </button>
               </div>
             </div>
@@ -345,118 +349,134 @@ export default function Teams() {
           <Card key={team.id}>
             <CardContent className="p-4 space-y-4">
               {/* Team header */}
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Users className="w-6 h-6 text-primary" />
-                </div>
+              <div className="flex items-center gap-4 justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Users className="w-6 h-6 text-primary" />
+                  </div>
 
-                <div className="min-w-0">
-                  {editTeamId === team.id ? (
-                    <>
-                      <input
-                        type="text"
-                        value={editName}
-                        onChange={e => setEditName(e.target.value)}
-                        className="block mb-1 px-2 py-1 border rounded w-full"
-                      />
-                      <input
-                        type="text"
-                        value={editSeason}
-                        onChange={e => setEditSeason(e.target.value)}
-                        className="block mb-1 px-2 py-1 border rounded w-full"
-                      />
-                      <div className="mb-1">
-                        <Label>Center</Label>
-                        <select
-                          className="w-full border rounded-md h-10 px-3"
-                          value={editCenterId ?? ''}
-                          onChange={e => setEditCenterId(e.target.value || null)}
-                        >
-                          <option value="">Sin center</option>
-                          {availableCenters.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <button onClick={() => updateTeam(team.id, editName, editSeason, editCenterId)} className="mr-2 px-3 py-1 bg-primary text-white rounded text-xs">Guardar</button>
-                      <button onClick={() => setEditTeamId(null)} className="px-3 py-1 bg-muted text-foreground rounded text-xs">Cancelar</button>
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-medium text-foreground">
-                        {team.name}
-                      </p>
-                      {team.season && (
-                        <Badge variant="secondary" className="text-xs mt-1">
-                          {team.season}
-                        </Badge>
-                      )}
-                      {role === 'super_admin' && (
-                        <div className="mt-2 flex gap-2">
-                          <button onClick={() => openEdit(team)} className="px-3 py-1 bg-muted text-foreground rounded text-xs">Editar</button>
-                          <button onClick={() => deleteTeam(team.id)} className="px-3 py-1 bg-destructive text-white rounded text-xs">Eliminar</button>
+                  <div className="min-w-0">
+                    {editTeamId === team.id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={e => setEditName(e.target.value)}
+                          className="block mb-1 px-2 py-1 border rounded w-full"
+                        />
+                        <input
+                          type="text"
+                          value={editSeason}
+                          onChange={e => setEditSeason(e.target.value)}
+                          className="block mb-1 px-2 py-1 border rounded w-full"
+                        />
+                        <div className="mb-1">
+                          <Label>{t('teams.center')}</Label>
+                          <select
+                            className="w-full border rounded-md h-10 px-3"
+                            value={editCenterId ?? ''}
+                            onChange={e => setEditCenterId(e.target.value || null)}
+                          >
+                            <option value="">{t('teams.noCenter')}</option>
+                            {availableCenters.map(c => (
+                              <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                          </select>
                         </div>
-                      )}
-                    </>
-                  )}
+                        <button onClick={() => updateTeam(team.id, editName, editSeason, editCenterId)} className="mr-2 px-3 py-1 bg-primary text-white rounded text-xs">{t('teams.save')}</button>
+                        <button onClick={() => setEditTeamId(null)} className="px-3 py-1 bg-muted text-foreground rounded text-xs">{t('common.back')}</button>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-medium text-foreground">
+                          {team.name}
+                        </p>
+                        {team.season && (
+                          <Badge variant="secondary" className="text-xs mt-1">
+                            {team.season}
+                          </Badge>
+                        )}
+                        {role === 'super_admin' && (
+                          <div className="mt-2 flex gap-2">
+                            <button onClick={() => openEdit(team)} className="px-3 py-1 bg-muted text-foreground rounded text-xs">{t('teams.edit')}</button>
+                            <button onClick={() => deleteTeam(team.id)} className="px-3 py-1 bg-destructive text-white rounded text-xs">{t('teams.delete')}</button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
+                <button
+                  onClick={() =>
+                    setExpandedTeamId(prev => (prev === team.id ? null : team.id))
+                  }
+                  className="p-2 rounded hover:bg-muted"
+                >
+                  <ChevronRight
+                    className={`w-5 h-5 transition-transform ${
+                      expandedTeamId === team.id ? 'rotate-90' : ''
+                    }`}
+                  />
+                </button>
               </div>
 
               {/* Players */}
-              <div className="border-t pt-3 space-y-2">
-                {team.players.length > 0 ? (
-                  team.players.map(player => (
-                    <div
-                      key={player.id}
-                      className="flex items-center justify-between p-2 rounded hover:bg-muted"
-                    >
-                      <div>
-                        <p className="text-sm font-medium">
-                          {player.full_name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {player.birth_date
-                            ? new Date(player.birth_date).getFullYear()
-                            : '—'}
-                        </p>
-                      </div>
-
-                      {player.user_id ? (
-                        <span className="text-green-600 text-xs font-semibold">
-                          Acceso activo
-                        </span>
-                      ) : (
-                        <div onClick={e => e.stopPropagation()}>
-                          <ActivatePlayerModal
-                            playerId={player.id}
-                            onSuccess={() => {
-                              // recargar equipos tras activación
-                              setTeams(prev =>
-                                prev.map(t =>
-                                  t.id === team.id
-                                    ? {
-                                        ...t,
-                                        players: t.players.map(p =>
-                                          p.id === player.id
-                                            ? { ...p, user_id: 'activated' }
-                                            : p
-                                        ),
-                                      }
-                                    : t
-                                )
-                              )
-                            }}
-                          />
+              {expandedTeamId === team.id && (
+                <div className="border-t pt-3 space-y-2">
+                  {team.players.length > 0 ? (
+                    team.players.map(player => (
+                      <div
+                        key={player.id}
+                        className="flex items-center justify-between p-2 rounded hover:bg-muted"
+                      >
+                        <div>
+                          <p className="text-sm font-medium">
+                            {player.full_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {player.birth_date
+                              ? new Date(player.birth_date).getFullYear()
+                              : '—'}
+                          </p>
                         </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No players assigned
-                  </p>
-                )}
-              </div>
+
+                        {player.user_id ? (
+                          <span className="text-green-600 text-xs font-semibold">
+                            Acceso activo
+                          </span>
+                        ) : (
+                          <div onClick={e => e.stopPropagation()}>
+                            <ActivatePlayerModal
+                              playerId={player.id}
+                              onSuccess={() => {
+                                // recargar equipos tras activación
+                                setTeams(prev =>
+                                  prev.map(t =>
+                                    t.id === team.id
+                                      ? {
+                                          ...t,
+                                          players: t.players.map(p =>
+                                            p.id === player.id
+                                              ? { ...p, user_id: 'activated' }
+                                              : p
+                                          ),
+                                        }
+                                      : t
+                                  )
+                                )
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {t('teams.noPlayers')}
+                    </p>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}

@@ -42,8 +42,11 @@ export default function ResetPassword() {
     await supabase.auth.updateUser({
       data: { temp_password: false },
     })
+    
+      // Refrescar sesión para que el contexto se actualice
+      await supabase.auth.refreshSession();
 
-    navigate('/dashboard/player', { replace: true })
+    navigate('/player/dashboard', { replace: true })
   }
 
   return (

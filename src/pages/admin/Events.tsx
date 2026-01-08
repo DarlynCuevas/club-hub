@@ -23,7 +23,7 @@ export default function AdminEvents() {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const canManageEvents = role === 'club_admin' || role === 'coach';
+    const canManageEvents = role === 'super_admin' || role === 'coach';
 
     if (!canManageEvents) {
         return (

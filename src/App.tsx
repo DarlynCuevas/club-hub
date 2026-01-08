@@ -19,7 +19,7 @@ import RoleRedirect from "@/components/layout/RoleRedirect";
 import CalendarPage from "./pages/CalendarPage";
 import Messages from "./pages/Messages";
 import Teams from "./pages/admin/Teams";
-import Profile from "./pages/Profile";
+import Profile from "./pages/admin/Profile";
 import PlayerDashboard from "./pages/player/PlayerDashboard";
 import ResetPassword from "./pages/player/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -30,7 +30,7 @@ import { useEffect, useState } from "react";
 import Players from "./pages/parent/Players";
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import { supabase } from "./lib/supabase";
-import Home from "./pages/Home";
+import Home from "./pages/admin/Home";
 
 const queryClient = new QueryClient();
 
@@ -58,12 +58,14 @@ function AppRoutes() {
   const [playerProfile, setPlayerProfile] = useState<any | null>(null);
   const [loadingPlayer, setLoadingPlayer] = useState(true);
 
-  /* =======================
-     RESET PASSWORD
-  ======================= */
-  if (forcePasswordReset && location.pathname !== "/reset-password") {
-    return <Navigate to="/reset-password" replace />;
-  }
+
+
+  // Redirección a reset-password usando useEffect para evitar errores de hooks
+  useEffect(() => {
+    if (forcePasswordReset && location.pathname !== "/reset-password") {
+      navigate("/reset-password", { replace: true });
+    }
+  }, [forcePasswordReset, location.pathname, navigate]);
 
   /* =======================
      CARGAR PLAYER PROFILE
@@ -75,13 +77,13 @@ function AppRoutes() {
     }
 
     const loadPlayerProfile = async () => {
-      const { data } = await supabase
+      const { data: playerData } = await supabase
         .from("players")
         .select("id, club_id")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      setPlayerProfile(data ?? null);
+      setPlayerProfile(playerData ?? null);
       setLoadingPlayer(false);
     };
 
@@ -93,6 +95,9 @@ function AppRoutes() {
   ======================= */
   useEffect(() => {
     if (!isAuthenticated || !role) return;
+
+    // Si el usuario debe resetear la contraseña, no redirigir a dashboard
+    if (forcePasswordReset) return;
 
     // Esperar datos del player
     if (role === "player" && loadingPlayer) return;
@@ -106,18 +111,14 @@ function AppRoutes() {
         break;
 
       case "parent":
-        navigate("/dashboard/parent", { replace: true });
+        navigate("/parent/", { replace: true });
         break;
 
       case "player":
-        if (!playerProfile || !playerProfile.club_id) {
-          navigate("/player/onboarding", { replace: true });
-        } else {
-          navigate("/dashboard/player", { replace: true });
-        }
+        navigate("/player/dashboard", { replace: true });
         break;
     }
-  }, [isAuthenticated, role, loadingPlayer, playerProfile, location.pathname]);
+  }, [isAuthenticated, role, loadingPlayer, playerProfile, location.pathname, forcePasswordReset]);
 
   return (
     <Routes>
@@ -150,8 +151,8 @@ function AppRoutes() {
         <Route path="/centers" element={<Centers />} />
         <Route path="/profile" element={<Profile />} />
 
-        <Route path="/dashboard/player" element={<PlayerDashboard />} />
-        <Route path="/dashboard/parent" element={<ParentDashboard />} />
+        <Route path="/player/dashboard" element={<PlayerDashboard />} />
+        <Route path="/parent/dashboard" element={<ParentDashboard />} />
         <Route path="/players" element={<Players />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
 
@@ -174,13 +175,13 @@ function AppRoutes() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
           <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

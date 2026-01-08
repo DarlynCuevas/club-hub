@@ -55,8 +55,8 @@ export default function EventDetail() {
   const [editStartTime, setEditStartTime] = useState('')
   const [editEndTime, setEditEndTime] = useState('')
 
-  const canEditAttendance = role === 'coach' || role === 'club_admin'
-  const canEditEvent = role === 'coach' || role === 'club_admin'
+  const canEditAttendance = role === 'coach' || role === 'super_admin'
+  const canEditEvent = role === 'coach' || role === 'super_admin'
 
   /* -------------------- EFFECTS -------------------- */
 

@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 import { Spinner } from '@/components/ui/spinner'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import ActivatePlayerModal from '../parent/components/ActivatePlayerModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -40,6 +42,7 @@ type Player = {
 
 export default function PlayersAdmin() {
   const { role } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
 
   const [clubs, setClubs] = useState<Club[]>([])
@@ -243,14 +246,14 @@ export default function PlayersAdmin() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Players (Admin)</h1>
+          <h1 className="text-2xl font-semibold">{t('players.title')}</h1>
           <p className="text-sm text-muted-foreground">
-            Gestión de jugadores del club
+            {t('players.subtitle')}
           </p>
         </div>
 
         <Button onClick={() => setOpenCreate(true)}>
-          Crear jugador
+          {t('players.createBtn')}
         </Button>
       </div>
 
@@ -258,12 +261,12 @@ export default function PlayersAdmin() {
       {openCreate && (
         <Card>
           <CardHeader>
-            <CardTitle>Nuevo jugador</CardTitle>
+            <CardTitle>{t('players.new')}</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
             <div>
-              <Label>Club</Label>
+              <Label>{t('players.club')}</Label>
               <select
                 className="w-full border rounded-md h-10 px-3"
                 value={clubId}
@@ -272,7 +275,7 @@ export default function PlayersAdmin() {
                   setTeamId('')
                 }}
               >
-                <option value="">Selecciona un club</option>
+                <option value="">{t('players.selectClub')}</option>
                 {clubs.map(c => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -282,7 +285,7 @@ export default function PlayersAdmin() {
             </div>
 
             <div>
-              <Label>Nombre completo</Label>
+              <Label>{t('players.namePlaceholder')}</Label>
               <Input
                 value={fullName}
                 onChange={e => setFullName(e.target.value)}
@@ -290,7 +293,7 @@ export default function PlayersAdmin() {
             </div>
 
             <div>
-              <Label>Fecha de nacimiento</Label>
+              <Label>{t('players.birthDate')}</Label>
               <Input
                 type="date"
                 value={birthDate}
@@ -299,14 +302,14 @@ export default function PlayersAdmin() {
             </div>
 
             <div>
-              <Label>Equipo (opcional)</Label>
+              <Label>{t('players.teamOptional')}</Label>
               <select
                 className="w-full border rounded-md h-10 px-3"
                 value={teamId}
                 onChange={e => setTeamId(e.target.value)}
                 disabled={!clubId}
               >
-                <option value="">Sin asignar</option>
+                <option value="">{t('players.noTeam')}</option>
                 {teams
                   .filter(t => t.club_id === clubId)
                   .map(t => (
@@ -319,13 +322,13 @@ export default function PlayersAdmin() {
 
             <div className="flex gap-2">
               <Button onClick={createPlayer} disabled={creating}>
-                Crear jugador
+                {t('players.createBtn')}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => setOpenCreate(false)}
               >
-                Cancelar
+                {t('common.cancel')}
               </Button>
             </div>
           </CardContent>
@@ -335,40 +338,24 @@ export default function PlayersAdmin() {
       {/* LIST */}
       <div className="grid gap-3">
         {players.map(p => {
-  const teamName =
-    p.team_players?.[0]?.team?.name ?? 'Sin equipo'
-
-  return (
-    <Card key={p.id}>
-      <CardContent className="p-4 space-y-1">
-        <div className="font-medium">
-          {p.full_name}
-        </div>
-
-        <div className="text-sm text-muted-foreground">
-          Club: {p.club?.name ?? '—'}
-        </div>
-
-        <div className="text-sm text-muted-foreground">
-          Equipo: {teamName}
-        </div>
-
-        <div className="text-xs mt-1">
-          Estado:{' '}
-          {p.user_id ? (
-            <span className="text-green-600">
-              Acceso activo
-            </span>
-          ) : (
-            <span className="text-yellow-600">
-              Sin acceso
-            </span>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  )
-})}
+          const teamName = p.team_players?.[0]?.team?.name ?? t('players.noTeam');
+          return (
+            <Card key={p.id}>
+              <CardContent className="p-4 space-y-1">
+                <div className="font-medium">{p.full_name}</div>
+                <div className="text-sm text-muted-foreground">{t('players.clubLabel')}: {p.club?.name ?? '—'}</div>
+                <div className="text-sm text-muted-foreground">{t('players.teamLabel')}: {teamName}</div>
+                <div className="text-xs mt-1">
+                  {p.user_id ? (
+                    <span className="text-green-600">{t('players.activeAccess')}</span>
+                  ) : (
+                    <ActivatePlayerModal playerId={p.id} onSuccess={() => window.location.reload()} />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
 
       </div>
     </div>

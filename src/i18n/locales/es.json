@@ -1,5 +1,22 @@
- { 
+{ 
+    "players": {
+      "title": "Jugadores (Admin)",
+      "subtitle": "Gestión de jugadores del club",
+      "createBtn": "Crear jugador",
+      "new": "Nuevo jugador",
+      "club": "Club",
+      "selectClub": "Selecciona un club",
+      "namePlaceholder": "Nombre completo",
+      "birthDate": "Fecha de nacimiento",
+      "teamOptional": "Equipo (opcional)",
+      "noTeam": "Sin asignar",
+      "clubLabel": "Club",
+      "teamLabel": "Equipo",
+      "activeAccess": "Acceso activo"
+    },
+   
   "adminEvents": {
+    
     "title": "Eventos",
     "new": "Nuevo evento",
     "noAccess": "No tienes acceso a esta sección",
@@ -75,15 +92,23 @@
     "empty": "No hay equipos asignados",
     "coachSubtitle": "Equipos que entrenas",
     "userSubtitle": "Tus equipos",
-    "quickRoster": "Plantilla rápida",
-    "born": "Nacido en {{year}}",
-    "na": "N/D",
-    "players": "Jugadores"
+    "manageCenters": "Gestionar centers",
+    "managePlayers": "Gestionar jugadores",
+    "createBtn": "Crear equipo",
+    "new": "Crear equipo",
+    "selectClub": "Selecciona un club",
+    "namePlaceholder": "Nombre del equipo",
+    "seasonPlaceholder": "Temporada (ej. 2025/2026)",
+    "center": "Center",
+    "noCenter": "Sin center",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "noPlayers": "No hay jugadores asignados"
   },
   "common": {
-    "back": "Atrás"
-  },
-  "profile": {
+    "back": "Atrás",
+    "cancel": "Cancelar"
   },
   "eventDetail": {
     "notFound": "Evento no encontrado",
@@ -106,5 +131,20 @@
     "language": "Idioma",
     "signOut": "Cerrar sesión",
     "version": "ClubKit v{{version}}"
+  },
+  "centers": {
+    "loading": "Cargando centers...",
+    "title": "Centros",
+    "subtitle": "Gestiona las instalaciones de los clubs",
+    "create": "Crear center",
+    "new": "Nuevo center",
+    "club": "Club",
+    "selectClub": "Selecciona un club",
+    "name": "Nombre del center",
+    "address": "Dirección",
+    "addressPlaceholder": "Opcional",
+    "createBtn": "Crear",
+    "empty": "No hay centers creados.",
+    "clubLabel": "Club"
   }
 }

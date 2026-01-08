@@ -1,4 +1,20 @@
-    {
+{
+        "players": {
+            "title": "Jugadors (Admin)",
+            "subtitle": "Gestió de jugadors del club",
+            "createBtn": "Crear jugador",
+            "new": "Nou jugador",
+            "club": "Club",
+            "selectClub": "Selecciona un club",
+            "namePlaceholder": "Nom complet",
+            "birthDate": "Data de naixement",
+            "teamOptional": "Equip (opcional)",
+            "noTeam": "Sense assignar",
+            "clubLabel": "Club",
+            "teamLabel": "Equip",
+            "activeAccess": "Accés actiu"
+        },
+      
     "adminEvents": {
         "title": "Esdeveniments",
         "new": "Nou esdeveniment",
@@ -75,10 +91,19 @@
         "empty": "No hi ha equips assignats",
         "coachSubtitle": "Equips que entrenes",
         "userSubtitle": "Els teus equips",
-        "quickRoster": "Plantilla ràpida",
-        "born": "Nascut el {{year}}",
-           "na": "N/D",
-           "players": "Jugadors"
+        "manageCenters": "Gestionar centres",
+        "managePlayers": "Gestionar jugadors",
+        "createBtn": "Crear equip",
+        "new": "Crear equip",
+        "selectClub": "Selecciona un club",
+        "namePlaceholder": "Nom de l'equip",
+        "seasonPlaceholder": "Temporada (ex. 2025/2026)",
+        "center": "Centre",
+        "noCenter": "Sense centre",
+        "save": "Desar",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "noPlayers": "No hi ha jugadors assignats"
     },
     
     "eventDetail": {
@@ -95,7 +120,8 @@
         "date": "{{start}} – {{end}}"
     },
     "common": {
-        "back": "Enrere"
+        "back": "Cancel·lar",
+        "cancel": "Cancel·lar"
     },
     "profile": {
         "accountSettings": "Configuració del compte",
@@ -105,5 +131,20 @@
         "language": "Idioma",
         "signOut": "Tanca sessió",
         "version": "ClubKit v{{version}}"
+    },
+    "centers": {
+        "loading": "Carregant centres...",
+        "title": "Centres",
+        "subtitle": "Gestiona les instal·lacions dels clubs",
+        "create": "Crear centre",
+        "new": "Nou centre",
+        "club": "Club",
+        "selectClub": "Selecciona un club",
+        "name": "Nom del centre",
+        "address": "Adreça",
+        "addressPlaceholder": "Opcional",
+        "createBtn": "Crear",
+        "empty": "No hi ha centres creats.",
+        "clubLabel": "Club"
     }
 }

@@ -1,4 +1,19 @@
- { 
+{ 
+    "players": {
+      "title": "Players (Admin)",
+      "subtitle": "Club player management",
+      "createBtn": "Create player",
+      "new": "New player",
+      "club": "Club",
+      "selectClub": "Select a club",
+      "namePlaceholder": "Full name",
+      "birthDate": "Birth date",
+      "teamOptional": "Team (optional)",
+      "noTeam": "Unassigned",
+      "clubLabel": "Club",
+      "teamLabel": "Team",
+      "activeAccess": "Active access"
+    },
   "adminEvents": {
     "title": "Events",
     "new": "New event",
@@ -75,16 +90,25 @@
     "empty": "No teams assigned",
     "coachSubtitle": "Teams you coach",
     "userSubtitle": "Your teams",
-    "quickRoster": "Quick roster",
-    "born": "Born {{year}}",
-    "na": "N/A",
-    "players": "Players"
+    "manageCenters": "Manage centers",
+    "managePlayers": "Manage players",
+    "createBtn": "Create team",
+    "new": "Create team",
+    "selectClub": "Select a club",
+    "namePlaceholder": "Team name",
+    "seasonPlaceholder": "Season (e.g. 2025/2026)",
+    "center": "Center",
+    "noCenter": "No center",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "noPlayers": "No players assigned"
   },
   "common": {
-    "back": "Back"
+    "back": "Cancel",
+    "cancel": "Cancel"
   },
-  "profile": {
-  },
+
   "eventDetail": {
     "notFound": "Event not found",
     "attendance": "Attendance",
@@ -106,5 +130,20 @@
     "language": "Language",
     "signOut": "Sign Out",
     "version": "ClubKit v{{version}}"
+  },
+  "centers": {
+    "loading": "Loading centers...",
+    "title": "Centers",
+    "subtitle": "Manage club facilities",
+    "create": "Create center",
+    "new": "New center",
+    "club": "Club",
+    "selectClub": "Select a club",
+    "name": "Center name",
+    "address": "Address",
+    "addressPlaceholder": "Optional",
+    "createBtn": "Create",
+    "empty": "No centers created.",
+    "clubLabel": "Club"
   }
 }

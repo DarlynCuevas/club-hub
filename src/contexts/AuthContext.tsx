@@ -20,6 +20,8 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+    // Debug global para ver cambios de authState
+    // useEffect(() => { console.log('authState', authState); }, [authState]);
   const [authState, setAuthState] = useState<
     AuthState & { forcePasswordReset?: boolean }
   >({
@@ -37,9 +39,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initSession = async () => {
       try {
-        const { data } = await supabase.auth.getSession()
+        const { data } = await supabase.auth.getSession();
+        console.log('[AuthContext] getSession', data);
 
         if (!data.session) {
+          console.log('[AuthContext] No session found, setting user: null');
           setAuthState({
             user: null,
             role: null,
@@ -47,22 +51,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isAuthenticated: false,
             isLoading: false,
             forcePasswordReset: false,
-          })
-          return
+          });
+          return;
         }
 
-        const userId = data.session.user.id
-        const tempPassword =
-          data.session.user.user_metadata?.temp_password === true
+        const userId = data.session.user.id;
+        const tempPassword = data.session.user.user_metadata?.temp_password === true;
 
         // 🔹 Perfil
         const { data: profile, error: profileError } = await supabase
           .from('users_profile')
           .select('id, email, full_name, created_at, language')
           .eq('id', userId)
-          .maybeSingle()
+          .maybeSingle();
+        console.log('[AuthContext] users_profile', { profile, profileError });
 
         if (profileError || !profile) {
+          console.log('[AuthContext] No profile found or error, setting user: null', { profileError, profile });
           setAuthState({
             user: null,
             role: null,
@@ -70,11 +75,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             isAuthenticated: false,
             isLoading: false,
             forcePasswordReset: tempPassword,
-          })
-          return
+          });
+          return;
         }
 
-        i18n.changeLanguage(profile.language || 'es')
+        i18n.changeLanguage(profile.language || 'es');
 
         const appUser: AppUser = {
           id: profile.id,
@@ -82,17 +87,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           firstName: profile.full_name.split(' ')[0],
           lastName: profile.full_name.split(' ').slice(1).join(' '),
           createdAt: profile.created_at,
-        }
+        };
 
         // 🔹 Rol (puede NO existir aún)
         const { data: roleData, error: roleError } = await supabase
           .from('user_roles')
           .select('role, club_id')
           .eq('user_id', userId)
-          .maybeSingle()
-
+          .maybeSingle();
         if (roleError) {
-          console.error('Error loading user role', roleError)
+          console.error('[AuthContext] Error loading user role', roleError);
         }
 
         setAuthState({
@@ -102,9 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isAuthenticated: true,
           isLoading: false,
           forcePasswordReset: tempPassword,
-        })
+        });
       } catch (err) {
-        console.error('Error restoring session', err)
+        console.error('[AuthContext] Error restoring session', err);
         setAuthState({
           user: null,
           role: null,
@@ -112,11 +116,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isAuthenticated: false,
           isLoading: false,
           forcePasswordReset: false,
-        })
+        });
       }
-    }
+    };
 
-    initSession()
+    initSession();
   }, [])
 
   /**
@@ -143,8 +147,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const userId = data.user.id
-    const tempPassword =
-      data.user.user_metadata?.temp_password === true
+    const tempPassword = data.user.user_metadata?.temp_password === true
+
+    // Si el usuario tiene temp_password, exponer el flag para que la redirección se haga en App.tsx
+    if (tempPassword) {
+      setAuthState(prev => ({ ...prev, forcePasswordReset: true, isLoading: false }))
+      return;
+    }
 
     // 🔹 Perfil
     const { data: profile } = await supabase

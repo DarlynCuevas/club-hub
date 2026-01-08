@@ -1,7 +1,7 @@
 import { User } from "@supabase/supabase-js";
 
 // User roles in the system
-export type UserRole = 'super_admin' | 'club_admin' | 'center_admin' | 'coach' | 'parent' | 'player';
+export type UserRole = 'super_admin' | 'center_admin' | 'coach' | 'parent' | 'player';
 
 // Core entities
 export interface AppUser {

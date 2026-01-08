@@ -49,8 +49,8 @@ export default function TeamDetailAdmin() {
 
 
 	// Puedes mejorar esto según tu AuthContext
-	const userRole = (window as any).userRole || 'club_admin' // temporal, reemplaza por tu lógica real
-	const canEditTeam = userRole === 'club_admin' || userRole === 'coach'
+	const userRole = (window as any).userRole || 'super_admin' // temporal, reemplaza por tu lógica real
+	const canEditTeam = userRole === 'super_admin' || userRole === 'coach'
 	const canCreatePlayer = canEditTeam
 
 	useEffect(() => {
@@ -233,7 +233,7 @@ export default function TeamDetailAdmin() {
 
 
 	// Permiso para activar acceso
-	const canActivateAccess = userRole === 'club_admin' || userRole === 'parent'
+	const canActivateAccess = userRole === 'super_admin' || userRole === 'parent'
 
 	// Llamada a Edge Function para crear usuario y enlazarlo al jugador
 	const activatePlayerAccess = async (playerId: string) => {

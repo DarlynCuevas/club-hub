@@ -48,7 +48,7 @@ export default function Profile() {
   // Role switcher for demo purposes
   const roles: UserRole[] = ['parent', 'coach', 'player']
   const canManageEvents =
-    role === 'club_admin' || role === 'coach'
+    role === 'super_admin' || role === 'coach'
 
   const menuItems = [
     ...(canManageEvents

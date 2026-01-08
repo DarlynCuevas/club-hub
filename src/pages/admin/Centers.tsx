@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -21,19 +22,20 @@ type Center = {
 }
 
 export default function Centers() {
-  const { role } = useAuth()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const { role } = useAuth();
+  const navigate = useNavigate();
 
-  const [clubs, setClubs] = useState<Club[]>([])
-  const [centers, setCenters] = useState<Center[]>([])
-  const [loading, setLoading] = useState(true)
+  const [clubs, setClubs] = useState<Club[]>([]);
+  const [centers, setCenters] = useState<Center[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // formulario
-  const [openCreate, setOpenCreate] = useState(false)
-  const [clubId, setClubId] = useState('')
-  const [name, setName] = useState('')
-  const [address, setAddress] = useState('')
-  const [creating, setCreating] = useState(false)
+  const [openCreate, setOpenCreate] = useState(false);
+  const [clubId, setClubId] = useState('');
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [creating, setCreating] = useState(false);
 
   /* =======================
      GUARD: solo admin
@@ -108,20 +110,20 @@ export default function Centers() {
      UI
   ======================= */
   if (loading) {
-    return <div className="p-6 max-w-4xl mx-auto">Cargando centers...</div>
+    return <div className="p-6 max-w-4xl mx-auto">{t('centers.loading', 'Cargando centers...')}</div>;
   }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Centers</h1>
+          <h1 className="text-2xl font-semibold">{t('centers.title', 'Centers')}</h1>
           <p className="text-sm text-muted-foreground">
-            Gestiona las instalaciones de los clubs
+            {t('centers.subtitle', 'Gestiona las instalaciones de los clubs')}
           </p>
         </div>
         <Button onClick={() => setOpenCreate(true)}>
-          Crear center
+          {t('centers.create', 'Crear center')}
         </Button>
       </div>
 
@@ -129,17 +131,17 @@ export default function Centers() {
       {openCreate && (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle>Nuevo center</CardTitle>
+            <CardTitle>{t('centers.new')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label>Club</Label>
+              <Label>{t('centers.club', 'Club')}</Label>
               <select
                 className="w-full border rounded-md h-10 px-3"
                 value={clubId}
                 onChange={e => setClubId(e.target.value)}
               >
-                <option value="">Selecciona un club</option>
+                <option value="">{t('centers.selectClub')}</option>
                 {clubs.map(club => (
                   <option key={club.id} value={club.id}>
                     {club.name}
@@ -148,26 +150,26 @@ export default function Centers() {
               </select>
             </div>
             <div>
-              <Label>Nombre del center</Label>
+              <Label>{t('centers.name')}</Label>
               <Input
                 value={name}
                 onChange={e => setName(e.target.value)}
               />
             </div>
             <div>
-              <Label>Dirección</Label>
+              <Label>{t('centers.address')}</Label>
               <Input
                 value={address}
                 onChange={e => setAddress(e.target.value)}
-                placeholder="Opcional"
+                placeholder={t('centers.addressPlaceholder')}
               />
             </div>
             <div className="flex gap-2">
               <Button onClick={createCenter} disabled={creating}>
-                Crear
+                {t('centers.createBtn')}
               </Button>
               <Button variant="outline" onClick={() => setOpenCreate(false)}>
-                Cancelar
+                {t('common.back')}
               </Button>
             </div>
           </CardContent>
@@ -176,9 +178,9 @@ export default function Centers() {
 
       {/* LISTADO */}
       <div className="grid gap-4">
-        {centers.length === 0 && <p className="text-muted-foreground">No hay centers creados.</p>}
+        {centers.length === 0 && <p className="text-muted-foreground">{t('centers.empty')}</p>}
         {centers.map(center => {
-          const club = clubs.find(c => c.id === center.club_id)
+          const club = clubs.find(c => c.id === center.club_id);
           return (
             <Card key={center.id}>
               <CardContent className="p-4">
@@ -188,7 +190,7 @@ export default function Centers() {
                       {center.name}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      Club: {club?.name}
+                      {t('centers.clubLabel')}: {club?.name}
                     </p>
                     {center.address && (
                       <p className="text-sm mt-1">
@@ -199,7 +201,7 @@ export default function Centers() {
                 </div>
               </CardContent>
             </Card>
-          )
+          );
         })}
       </div>
     </div>
