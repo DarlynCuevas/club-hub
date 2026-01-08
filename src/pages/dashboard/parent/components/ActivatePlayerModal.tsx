@@ -16,14 +16,9 @@ export default function ActivatePlayerModal({ playerId, onSuccess }: { playerId:
     setLoading(true)
     setError(null)
 
-
     // Debug: log current session and token before invoking Edge Function
     const sessionResult = await supabase.auth.getSession();
-    console.log('Supabase session before activation:', sessionResult);
-    console.log('TOKEN USED FOR INVOKE', sessionResult.data.session?.access_token);
-
-
-    const { data, error } = await supabaseFunctions.functions.invoke(
+    const res = await supabaseFunctions.functions.invoke(
       'activate-player',
       {
         body: {
@@ -33,9 +28,9 @@ export default function ActivatePlayerModal({ playerId, onSuccess }: { playerId:
         },
       }
     )
+    console.log('EDGE RESPONSE:', res)
 
-     console.log('INVOKE RESPONSE:', data, error)
-
+    const { data, error } = res
     if (error) {
       console.error(error)
       alert(error.message)

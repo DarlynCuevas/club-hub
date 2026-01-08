@@ -7,7 +7,6 @@ import { Empty } from '@/components/ui/empty'
 import { Error as ErrorState } from '@/components/ui/error'
 import { User } from 'lucide-react'
 
-
 type Player = {
   id: string
   full_name: string
@@ -17,102 +16,138 @@ type Player = {
 type Team = {
   id: string
   name: string
+  season?: string
 }
-
-type PlayerUIState = 'loading' | 'active' | 'blocked'
 
 export default function PlayerDashboard() {
   const { user } = useAuth()
+
   const [player, setPlayer] = useState<Player | null>(null)
   const [teams, setTeams] = useState<Team[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  // Futuro: eventos del calendario
-  // const [events, setEvents] = useState<any[]>([])
 
   useEffect(() => {
     if (!user?.id) return
+
     const load = async () => {
       setLoading(true)
       setError(null)
-      // 1. Perfil del jugador
+
+      /* =======================
+         1️ PERFIL DEL PLAYER
+      ======================= */
       const { data: playerData, error: playerError } = await supabase
         .from('players')
         .select('id, full_name, birth_date')
         .eq('user_id', user.id)
         .single()
-      if (playerError) {
-        setError('No se pudo cargar el perfil')
+
+      if (playerError || !playerData) {
+        setError('Acceso bloqueado')
         setLoading(false)
         return
       }
+
       setPlayer(playerData)
-      // 2. Equipos del jugador
+
+      /* =======================
+         2️ EQUIPOS DEL PLAYER
+      ======================= */
       const { data: teamsData, error: teamsError } = await supabase
         .from('team_players')
-        .select(`team:teams (id, name)`)
-        .eq('player_id', playerData.id)
+        .select(`
+          team:teams!team_players_team_id_fkey (
+            id,
+            name,
+            season
+          )
+        `)
+
       if (teamsError) {
         setError('No se pudieron cargar los equipos')
         setLoading(false)
         return
       }
-      setTeams((teamsData || []).map((t: any) => t.team))
 
-      // 3. (Futuro) Eventos del calendario
-      // const teamIds = (teamsData || []).map((t: any) => t.team?.id).filter(Boolean)
-      // if (teamIds.length > 0) {
-      //   const { data: eventsData } = await supabase
-      //     .from('events')
-      //     .select('*')
-      //     .in('team_id', teamIds)
-      //   setEvents(eventsData || [])
-      // }
+      // Deduplicar equipos por ID
+      const seen = new Set<string>()
+      const uniqueTeams: Team[] = []
 
+      ;(teamsData ?? []).forEach((row: any) => {
+        if (row.team && !seen.has(row.team.id)) {
+          seen.add(row.team.id)
+          uniqueTeams.push(row.team)
+        }
+      })
+
+      setTeams(uniqueTeams)
       setLoading(false)
     }
+
     load()
   }, [user])
 
-
-
-  const uiState: PlayerUIState =
-    loading ? 'loading' : !player ? 'blocked' : 'active'
-
-  if (uiState === 'loading') return <Spinner />
+  /* =======================
+     UI STATES
+  ======================= */
+  if (loading) return <Spinner />
   if (error) return <ErrorState message={error} />
-  if (uiState === 'blocked') {
-    return <Empty title="Acceso no disponible para este usuario" />
-  }
+  if (!player) return <Empty title="Acceso bloqueado" />
 
+  /* =======================
+     HELPERS
+  ======================= */
   const getAge = (birth: string | null) => {
     if (!birth) return '—'
-    const diff = Date.now() - new Date(birth).getTime()
-    return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
+    const today = new Date()
+    const birthDate = new Date(birth)
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const m = today.getMonth() - birthDate.getMonth()
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
   }
 
+  /* =======================
+     RENDER
+  ======================= */
   return (
     <div className="px-4 pt-8 pb-8 space-y-8 max-w-md mx-auto">
-      {/* Avatar grande y nombre */}
+      {/* Avatar + nombre */}
       <div className="flex flex-col items-center gap-3">
         <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
           <User className="w-12 h-12 text-primary" />
         </div>
-        <div className="text-2xl font-bold text-foreground text-center">{player.full_name}</div>
-        <div className="text-base text-muted-foreground">Edad: {getAge(player.birth_date)}</div>
+        <div className="text-2xl font-bold text-foreground text-center">
+          {player.full_name}
+        </div>
+        <div className="text-base text-muted-foreground">
+          Edad: {getAge(player.birth_date)}
+        </div>
       </div>
 
       {/* Equipos */}
       <Card>
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold mb-3">Mis equipos</h2>
+
           {teams.length === 0 ? (
             <Empty title="No perteneces a ningún equipo" />
           ) : (
             <ul className="space-y-3">
               {teams.map(team => (
-                <li key={team.id} className="p-4 bg-muted rounded text-lg font-medium">
+                <li
+                  key={team.id}
+                  className="p-4 bg-muted rounded text-lg font-medium"
+                >
                   {team.name}
+                  {team.season && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {team.season}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -120,11 +155,13 @@ export default function PlayerDashboard() {
         </CardContent>
       </Card>
 
-      {/* Calendario (placeholder) */}
+      {/* Calendario */}
       <Card>
         <CardContent className="p-6">
           <h2 className="text-lg font-semibold mb-3">Calendario</h2>
-          <div className="text-muted-foreground text-base">(Próximamente)</div>
+          <div className="text-muted-foreground text-base">
+            (Próximamente)
+          </div>
         </CardContent>
       </Card>
     </div>

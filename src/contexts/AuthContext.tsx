@@ -14,17 +14,21 @@ interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>
   logout: () => void
   setRole: (role: UserRole) => void
+  forcePasswordReset?: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [authState, setAuthState] = useState<AuthState>({
+  const [authState, setAuthState] = useState<
+    AuthState & { forcePasswordReset?: boolean }
+  >({
     user: null,
     role: null,
     clubId: null,
     isAuthenticated: false,
-    isLoading: true, // 🔴 IMPORTANTE: empieza en true
+    isLoading: true,
+    forcePasswordReset: false,
   })
 
   /**
@@ -32,64 +36,84 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   useEffect(() => {
     const initSession = async () => {
-      const { data } = await supabase.auth.getSession()
+      try {
+        const { data } = await supabase.auth.getSession()
 
-      if (!data.session) {
+        if (!data.session) {
+          setAuthState({
+            user: null,
+            role: null,
+            clubId: null,
+            isAuthenticated: false,
+            isLoading: false,
+            forcePasswordReset: false,
+          })
+          return
+        }
+
+        const userId = data.session.user.id
+        const tempPassword =
+          data.session.user.user_metadata?.temp_password === true
+
+        // 🔹 Perfil
+        const { data: profile, error: profileError } = await supabase
+          .from('users_profile')
+          .select('id, email, full_name, created_at, language')
+          .eq('id', userId)
+          .maybeSingle()
+
+        if (profileError || !profile) {
+          setAuthState({
+            user: null,
+            role: null,
+            clubId: null,
+            isAuthenticated: false,
+            isLoading: false,
+            forcePasswordReset: tempPassword,
+          })
+          return
+        }
+
+        i18n.changeLanguage(profile.language || 'es')
+
+        const appUser: AppUser = {
+          id: profile.id,
+          email: profile.email,
+          firstName: profile.full_name.split(' ')[0],
+          lastName: profile.full_name.split(' ').slice(1).join(' '),
+          createdAt: profile.created_at,
+        }
+
+        // 🔹 Rol (puede NO existir aún)
+        const { data: roleData, error: roleError } = await supabase
+          .from('user_roles')
+          .select('role, club_id')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        if (roleError) {
+          console.error('Error loading user role', roleError)
+        }
+
+        setAuthState({
+          user: appUser,
+          role: roleData?.role ?? null,
+          clubId: roleData?.club_id ?? null,
+          isAuthenticated: true,
+          isLoading: false,
+          forcePasswordReset: tempPassword,
+        })
+      } catch (err) {
+        console.error('Error restoring session', err)
         setAuthState({
           user: null,
           role: null,
           clubId: null,
           isAuthenticated: false,
           isLoading: false,
+          forcePasswordReset: false,
         })
-        return
       }
-
-      const userId = data.session.user.id
-
-      // 🔹 cargar perfil
-      const { data: profile } = await supabase
-        .from('users_profile')
-        .select('id, email, full_name, created_at, language')
-        .eq('id', userId)
-        .single()
-
-      if (!profile) {
-        setAuthState({
-          user: null,
-          role: null,
-          clubId: null,
-          isAuthenticated: false,
-          isLoading: false,
-        })
-        return
-      }
-
-      i18n.changeLanguage(profile.language || 'es')
-
-      const appUser: AppUser = {
-        id: profile.id,
-        email: profile.email,
-        firstName: profile.full_name.split(' ')[0],
-        lastName: profile.full_name.split(' ').slice(1).join(' '),
-        createdAt: profile.created_at,
-      }
-
-      // 🔹 cargar rol y club
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role, club_id')
-        .eq('user_id', userId)
-        .limit(1)
-        .single()
-
-      setAuthState({
-        user: appUser,
-        role: roleData?.role ?? null,
-        clubId: roleData?.club_id ?? null,
-        isAuthenticated: true,
-        isLoading: false,
-      })
     }
 
     initSession()
@@ -113,20 +137,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clubId: null,
         isAuthenticated: false,
         isLoading: false,
+        forcePasswordReset: false,
       })
       throw error
     }
 
     const userId = data.user.id
+    const tempPassword =
+      data.user.user_metadata?.temp_password === true
 
-    // 🔹 perfil
+    // 🔹 Perfil
     const { data: profile } = await supabase
       .from('users_profile')
       .select('id, email, full_name, created_at, language')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
-    if (!profile) throw new Error('Profile not found')
+    if (!profile) {
+      throw new Error('Profile not found')
+    }
 
     i18n.changeLanguage(profile.language || 'es')
 
@@ -138,13 +167,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       createdAt: profile.created_at,
     }
 
-    // 🔹 rol
-    const { data: roleData } = await supabase
+    // 🔹 Rol (NO forzamos single)
+    const { data: roleData, error: roleError } = await supabase
       .from('user_roles')
       .select('role, club_id')
       .eq('user_id', userId)
-      .limit(1)
-      .single()
+      .maybeSingle()
+
+    if (roleError) {
+      console.error('Error loading user role', roleError)
+    }
 
     setAuthState({
       user: appUser,
@@ -152,6 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clubId: roleData?.club_id ?? null,
       isAuthenticated: true,
       isLoading: false,
+      forcePasswordReset: tempPassword,
     })
   }
 
@@ -170,9 +203,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  /**
-   * 🔹 Cambiar rol (solo demo)
-   */
   const setRole = (role: UserRole) => {
     setAuthState(prev => ({ ...prev, role }))
   }
@@ -183,6 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   )
 }
+
 
 export function useAuth() {
   const context = useContext(AuthContext)

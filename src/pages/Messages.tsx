@@ -31,7 +31,7 @@ export default function Messages() {
       setTeams(teamsWithGlobal)
       setLoading(false)
     }
-    if (role === 'coach' || role === 'club_admin') loadTeams()
+    if (role === 'coach' || role === 'super_admin') loadTeams()
     else setLoading(false)
   }, [clubId, role])
 
@@ -39,7 +39,7 @@ export default function Messages() {
   useEffect(() => {
     const fetchUserTeams = async () => {
       if (!user) return setUserTeamIds([])
-      if (role === 'coach' || role === 'club_admin') {
+      if (role === 'coach' || role === 'super_admin') {
         // Coach y admin pueden ver todos los equipos
         const { data } = await supabase
           .from('teams')
@@ -71,7 +71,7 @@ export default function Messages() {
           )
         `)
         .order('created_at', { ascending: false })
-      if (role === 'club_admin') {
+      if (role === 'super_admin') {
         // Admin ve todo
       } else {
         query = query.or(`team_id.is.null,team_id.in.(${userTeamIds.join(',')})`)
@@ -86,7 +86,7 @@ export default function Messages() {
   // 🔹 Create message (coach / admin)
   const handleCreateMessage = async () => {
     if (!clubId) return
-    if (role !== 'coach' && role !== 'club_admin') return
+    if (role !== 'coach' && role !== 'super_admin') return
     if (!title || !body) return
 
     setCreating(true)
@@ -124,7 +124,7 @@ export default function Messages() {
       </div>
 
       {/* 🔹 Create message */}
-      {(role === 'coach' || role === 'club_admin') && (
+      {(role === 'coach' || role === 'super_admin') && (
         <div className="space-y-2 border rounded-lg p-4">
           <input
             value={title}

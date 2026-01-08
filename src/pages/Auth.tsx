@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 export default function Auth() {
@@ -20,30 +21,43 @@ export default function Auth() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
+    e.preventDefault();
+    setError('');
 
-  if (!email || !password) {
-    setError('Please fill in all fields');
-    return;
-  }
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
 
-  if (!isLogin && !name) {
-    setError('Please enter your name');
-    return;
-  }
+    if (!isLogin && !name) {
+      setError('Please enter your name');
+      return;
+    }
 
-  try {
-    await login(email, password);
-
-    const redirectTo =
-      (location.state as any)?.from || '/home';
-
-    navigate(redirectTo, { replace: true });
-  } catch (err) {
-    setError('Invalid credentials. Please try again.');
-  }
-};
+    try {
+      if (isLogin) {
+        await login(email, password);
+        // No redirección aquí. El router decide tras login.
+      } else {
+        // Registro: signup_type = 'player' por defecto
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              signup_type: 'player',
+              full_name: name,
+            },
+          },
+        });
+        if (error) throw error;
+        setIsLogin(true);
+        setError('Cuenta creada. Revisa tu email para activar la cuenta.');
+      }
+    } catch (err) {
+      setError('Invalid credentials. Please try again.');
+    }
+  };
 
 
   return (

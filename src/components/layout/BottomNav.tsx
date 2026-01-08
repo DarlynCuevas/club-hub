@@ -1,16 +1,47 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Calendar, MessageSquare, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
-const navItems = [
-  { to: '/home', icon: Home, label: 'Home' },
-  { to: '/calendar', icon: Calendar, label: 'Calendar' },
-  { to: '/messages', icon: MessageSquare, label: 'Messages' },
-  { to: '/teams', icon: Users, label: 'Teams' },
-  { to: '/profile', icon: User, label: 'Profile' },
-];
+import type { UserRole } from '@/types';
+
+export const getNavItems = (role: UserRole) => {
+  if (role === 'player') {
+    return [
+      { to: '/dashboard/player', icon: Home, label: 'Home' },
+      { to: '/calendar', icon: Calendar, label: 'Calendar' },
+      { to: '/messages', icon: MessageSquare, label: 'Messages' },
+      { to: '/profile', icon: User, label: 'Profile' },
+    ];
+  }
+
+  if (role === 'parent' || role === 'coach') {
+    return [
+      { to: '/home', icon: Home, label: 'Home' },
+      { to: '/calendar', icon: Calendar, label: 'Calendar' },
+      { to: '/messages', icon: MessageSquare, label: 'Messages' },
+      { to: '/teams', icon: Users, label: 'Teams' },
+      { to: '/profile', icon: User, label: 'Profile' },
+    ];
+  }
+
+  if (role === 'super_admin') {
+    return [
+      { to: '/home', icon: Home, label: 'Home' },
+      { to: '/calendar', icon: Calendar, label: 'Calendar' },
+      { to: '/messages', icon: MessageSquare, label: 'Messages' },
+      { to: '/teams', icon: Users, label: 'Teams' },
+      { to: '/profile', icon: User, label: 'Profile' },
+    ];
+  }
+
+  return [];
+};
+
 
 export function BottomNav() {
+  const { role } = useAuth()
+  const navItems = getNavItems(role)
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-nav border-t border-border pb-safe">
       <div className="flex items-center justify-around h-16 max-w-lg mx-auto">
