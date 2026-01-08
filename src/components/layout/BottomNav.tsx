@@ -15,12 +15,13 @@ export const getNavItems = (role: UserRole) => {
     ];
   }
 
+
   if (role === 'parent' || role === 'coach') {
     return [
       { to: '/home', icon: Home, label: 'Home' },
       { to: '/calendar', icon: Calendar, label: 'Calendar' },
       { to: '/messages', icon: MessageSquare, label: 'Messages' },
-      { to: '/teams', icon: Users, label: 'Teams' },
+      { to: '/admin/teams', icon: Users, label: 'Teams' },
       { to: '/profile', icon: User, label: 'Profile' },
     ];
   }
@@ -30,7 +31,7 @@ export const getNavItems = (role: UserRole) => {
       { to: '/home', icon: Home, label: 'Home' },
       { to: '/calendar', icon: Calendar, label: 'Calendar' },
       { to: '/messages', icon: MessageSquare, label: 'Messages' },
-      { to: '/teams', icon: Users, label: 'Teams' },
+      { to: '/admin/teams', icon: Users, label: 'Teams' },
       { to: '/profile', icon: User, label: 'Profile' },
     ];
   }

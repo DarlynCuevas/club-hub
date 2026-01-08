@@ -1,3 +1,4 @@
+import PlayersAdmin from "./pages/admin/Players";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,21 +14,21 @@ import {
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Auth from "./pages/Auth";
-import Centers from "./pages/Centers";
+import Centers from "./pages/admin/Centers";
 import RoleRedirect from "@/components/layout/RoleRedirect";
 import CalendarPage from "./pages/CalendarPage";
 import Messages from "./pages/Messages";
-import Teams from "./pages/Teams";
+import Teams from "./pages/admin/Teams";
 import Profile from "./pages/Profile";
-import PlayerDashboard from "./pages/dashboard/player/PlayerDashboard";
-import ResetPassword from "./pages/dashboard/player/ResetPassword";
+import PlayerDashboard from "./pages/player/PlayerDashboard";
+import ResetPassword from "./pages/player/ResetPassword";
 import NotFound from "./pages/NotFound";
 import EventDetail from "./pages/EventDetail";
 import AdminEvents from "./pages/admin/Events";
 import TeamDetailAdmin from "./pages/admin/TeamDetailAdmin";
 import { useEffect, useState } from "react";
-import Players from "./pages/Players";
-import ParentDashboard from "./pages/dashboard/parent/ParentDashboard";
+import Players from "./pages/parent/Players";
+import ParentDashboard from "./pages/parent/ParentDashboard";
 import { supabase } from "./lib/supabase";
 import Home from "./pages/Home";
 
@@ -157,6 +158,7 @@ function AppRoutes() {
         <Route path="/admin/events" element={<AdminEvents />} />
         <Route path="/admin/teams" element={<Teams />} />
         <Route path="/admin/teams/:teamId" element={<TeamDetailAdmin />} />
+        <Route path="/admin/players" element={<PlayersAdmin />} />
       </Route>
 
       {/* 404 */}

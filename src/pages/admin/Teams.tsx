@@ -11,7 +11,7 @@ import { Users, ChevronRight, User } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import ActivatePlayerModal from './dashboard/parent/components/ActivatePlayerModal'
+import ActivatePlayerModal from '../parent/components/ActivatePlayerModal'
 
 type Player = {
   id: string
@@ -277,26 +277,33 @@ export default function Teams() {
         </p>
       </div>
 
-      {/* Acceso a gestión de centers (solo super_admin) */}
+      {/* Accesos administrativos (solo super_admin) */}
       {role === 'super_admin' && (
-        <div style={{ marginBottom: 16 }}>
-          <button
-            onClick={() => navigate('/centers')}
-            className="mb-2 px-4 py-2 bg-muted text-foreground rounded border border-border"
-            style={{ marginRight: 8 }}
-          >
-            Gestionar centers
-          </button>
-          <button onClick={() => setOpenCreate(true)} className="mb-2 px-4 py-2 bg-primary text-white rounded">
-            Crear equipo
-          </button>
+        <div className="mb-6">
+          <div className="flex gap-2 mb-2">
+            <button
+              onClick={() => navigate('/centers')}
+              className="px-4 py-2 bg-muted text-foreground rounded border border-border"
+            >
+              Gestionar centers
+            </button>
+            <button
+              onClick={() => navigate('/admin/players')}
+              className="px-4 py-2 bg-muted text-foreground rounded border border-border"
+            >
+              Gestionar jugadores
+            </button>
+            <button onClick={() => setOpenCreate(true)} className="px-4 py-2 bg-primary text-white rounded">
+              Crear equipo
+            </button>
+          </div>
           {openCreate && (
-            <div style={{ border: '1px solid #ccc', padding: 16, marginBottom: 16, background: '#fff' }}>
-              <h3 style={{ fontWeight: 600, marginBottom: 8 }}>Crear equipo</h3>
+            <div className="mt-2 border border-gray-200 rounded bg-white p-6">
+              <h3 className="font-semibold mb-4">Crear equipo</h3>
               <select
                 value={clubId}
                 onChange={e => setClubId(e.target.value)}
-                className="block mb-2 px-2 py-1 border rounded"
+                className="block mb-2 px-2 py-1 border rounded w-full"
               >
                 <option value="">Selecciona un club</option>
                 {clubs.map(club => (
@@ -319,8 +326,8 @@ export default function Teams() {
                 onChange={e => setSeason(e.target.value)}
                 className="block mb-2 px-2 py-1 border rounded w-full"
               />
-              <div style={{ marginTop: 12 }}>
-                <button onClick={createTeam} disabled={creating} className="mr-2 px-4 py-2 bg-primary text-white rounded">
+              <div className="mt-4 flex gap-2">
+                <button onClick={createTeam} disabled={creating} className="px-4 py-2 bg-primary text-white rounded">
                   Crear
                 </button>
                 <button onClick={() => setOpenCreate(false)} className="px-4 py-2 bg-muted text-foreground rounded">
