@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { useNavigate } from 'react-router-dom'
+import ActivatePlayerModal from '../parent/components/ActivatePlayerModal'
 
 export default function Home() {
   const { t } = useTranslation()
@@ -35,6 +36,23 @@ export default function Home() {
     inactivePlayers: 0,
     teamsWithoutCoach: 0,
   })
+
+  // Calcular el primer jugador sin acceso (opcional, para acción directa)
+  const [firstInactivePlayerId, setFirstInactivePlayerId] = useState<string | null>(null)
+  useEffect(() => {
+    if (role === 'super_admin') {
+      (async () => {
+        const { data } = await supabase
+          .from('players')
+          .select('id')
+          .is('user_id', null)
+          .limit(1)
+        setFirstInactivePlayerId(data && data[0]?.id ? data[0].id : null)
+      })()
+    }
+  }, [alerts.inactivePlayers, role])
+
+  const [activatePlayerId, setActivatePlayerId] = useState<string | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -172,8 +190,19 @@ export default function Home() {
     if (hour < 18) return t('home.greeting.afternoon')
     return t('home.greeting.evening')
   }
+   {activatePlayerId && (
+    <ActivatePlayerModal
+      playerId={activatePlayerId}
+      onSuccess={() => {
+        setActivatePlayerId(null)
+        window.location.reload()
+      }}
+    />
+  )}
 
   if (loading) return <Spinner />
+     {/* Modal para activar acceso */}
+ 
 
   return (
     <div className="px-4 pt-6 pb-20 space-y-8">
@@ -204,8 +233,8 @@ export default function Home() {
         <section className="grid gap-3 mb-4">
           {alerts.teamsWithoutCoach > 0 && (
             <Card
-              className="border-l-4 border-red-500 cursor-pointer"
-              onClick={() => navigate('/teams')}
+              className="border-l-4 border-red-500 bg-red-50 cursor-pointer"
+              onClick={() => navigate('/teams?filter=without-coach')}
             >
               <CardContent className="p-4">
                 <p className="text-sm font-medium">
@@ -217,8 +246,8 @@ export default function Home() {
 
           {alerts.unassignedPlayers > 0 && (
             <Card
-              className="border-l-4 border-orange-500 cursor-pointer"
-              onClick={() => navigate('/admin/players')}
+              className="border-l-4 border-orange-500 bg-orange-50 cursor-pointer"
+              onClick={() => navigate('/admin/players?filter=without-team')}
             >
               <CardContent className="p-4">
                 <p className="text-sm font-medium">
@@ -230,13 +259,24 @@ export default function Home() {
 
           {alerts.inactivePlayers > 0 && (
             <Card
-              className="border-l-4 border-yellow-500 cursor-pointer"
-              onClick={() => navigate('/admin/players')}
+              className="border-l-4 border-yellow-500 bg-yellow-50 cursor-pointer"
+              onClick={() => navigate('/admin/players?filter=inactive')}
             >
               <CardContent className="p-4">
                 <p className="text-sm font-medium">
                   {alerts.inactivePlayers} jugadores sin acceso activado
                 </p>
+                {firstInactivePlayerId && (
+                  <button
+                    className="mt-2 text-xs underline text-yellow-700"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setActivatePlayerId(firstInactivePlayerId);
+                    }}
+                  >
+                    Activar ahora
+                  </button>
+                )}
               </CardContent>
             </Card>
           )}
@@ -371,7 +411,6 @@ export default function Home() {
           ))
         )}
       </section>
-
     </div>
   )
 }
