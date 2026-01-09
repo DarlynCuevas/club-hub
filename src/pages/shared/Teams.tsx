@@ -104,7 +104,20 @@ export default function Teams() {
     if (role === 'super_admin') {
       const { data, error } = await supabase
         .from('teams')
-        .select('id, name, season')
+        .select(`
+          id,
+          name,
+          season,
+          team_players:team_players!team_players_team_id_fkey (
+            player:players!team_players_player_id_fkey (
+              id,
+              full_name,
+              birth_date,
+              user_id,
+              parent_user_id
+            )
+          )
+        `)
 
       if (error) {
         setError('Error loading teams')
@@ -114,7 +127,12 @@ export default function Teams() {
             id: t.id,
             name: t.name,
             season: t.season,
-            players: [],
+            players: Array.isArray(t.team_players)
+              ? t.team_players
+                  .map(tp => tp.player)
+                  .filter(Boolean)
+                  .flat()
+              : [],
           }))
         )
       }
