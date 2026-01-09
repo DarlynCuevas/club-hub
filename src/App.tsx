@@ -175,10 +175,12 @@ function AppRoutes() {
 ======================= */
 
 
+import { HashRouter } from "react-router-dom";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <BrowserRouter>
+      <HashRouter>
         <AuthProvider>
           <ClubProvider>
             <Toaster />
@@ -186,9 +188,8 @@ const App = () => (
             <AppRoutes />
           </ClubProvider>
         </AuthProvider>
-      </BrowserRouter>
+      </HashRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
-
 export default App;
