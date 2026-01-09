@@ -32,6 +32,7 @@ import ParentDashboard from "./pages/parent/ParentDashboard";
 import { supabase } from "./lib/supabase";
 import Home from "./pages/admin/Home";
 import { ClubProvider } from "@/contexts/ClubContext";
+import Coaches from "./pages/admin/Coaches";
 const queryClient = new QueryClient();
 
 /* =======================
@@ -161,6 +162,7 @@ function AppRoutes() {
         <Route path="/shared/teams" element={<Teams />} />
         <Route path="/admin/teams/:teamId" element={<TeamDetailAdmin />} />
         <Route path="/admin/players" element={<PlayersAdmin />} />
+        <Route path="/admin/coaches" element={<Coaches />} />
       </Route>
 
       {/* 404 */}

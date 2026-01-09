@@ -302,6 +302,12 @@ export default function Teams() {
               >
                 {t('teams.managePlayers', 'Gestionar jugadores')}
               </button>
+              <button
+                onClick={() => navigate('/admin/coaches')}
+                className="px-4 py-2 bg-muted text-foreground rounded border border-border"
+              >
+                Gestionar coaches
+              </button>
               <button onClick={() => setOpenCreate(true)} className="px-4 py-2 bg-primary text-white rounded">
                 {t('teams.createBtn', 'Crear equipo')}
               </button>
@@ -391,6 +397,12 @@ export default function Teams() {
               className="px-4 py-2 bg-muted text-foreground rounded border border-border"
             >
               {t('teams.managePlayers', 'Gestionar jugadores')}
+            </button>
+            <button
+              onClick={() => navigate('/admin/coaches')}
+              className="px-4 py-2 bg-muted text-foreground rounded border border-border"
+            >
+              Gestionar coaches
             </button>
             <button onClick={() => setOpenCreate(true)} className="px-4 py-2 bg-primary text-white rounded">
               {t('teams.createBtn', 'Crear equipo')}

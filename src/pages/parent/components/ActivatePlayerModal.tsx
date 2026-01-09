@@ -28,7 +28,7 @@ export default function ActivatePlayerModal({ playerId, onSuccess }: { playerId:
         },
       }
     )
-    console.log('EDGE RESPONSE:', res)
+
 
     const { data, error } = res
     if (error) {
