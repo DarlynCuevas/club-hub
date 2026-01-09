@@ -48,7 +48,7 @@ export default function Home() {
           title,
           body,
           created_at,
-          users_profile:author_id (
+          users_profile:created_by (
             full_name
           )
         `)
