@@ -55,9 +55,10 @@ export default function CalendarPage() {
           event_type,
           cancelled,
           club_id,
-          teams ( name )
+          team_id,
+          team:team_id ( name )
           `)
-            .returns<EventDB[]>()
+            .returns<any[]>()
 
 
       if (error) {
@@ -232,9 +233,9 @@ export default function CalendarPage() {
                         </span>
                       </div>
 
-                      {event.teams && event.teams.length > 0 && (
+                      {event.team && (
                         <p className="text-sm text-muted-foreground mt-2">
-                          {event.teams.map(t => t.name).join(', ')}
+                          {event.team.name}
                         </p>
                       )}
                     </CardContent>

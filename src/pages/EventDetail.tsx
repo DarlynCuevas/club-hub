@@ -18,7 +18,8 @@ type EventDetail = {
   end_time: string
   event_type: string
   cancelled?: boolean
-  teams: { name: string }[]
+  team_id: string
+  team?: { name: string } | null
 }
 
 export type AttendanceRow = {
@@ -62,6 +63,7 @@ export default function EventDetail() {
 
   useEffect(() => {
     const load = async () => {
+
       const { data, error } = await supabase
         .from('events')
         .select(`
@@ -72,12 +74,18 @@ export default function EventDetail() {
           event_type,
           cancelled,
           club_id,
-          teams ( name )
+          team_id,
+          team:team_id ( name )
         `)
         .eq('id', eventId)
         .single()
 
-      if (!error) setEvent(data)
+      if (!error && data) {
+        setEvent({
+          ...data,
+          team: Array.isArray(data.team) ? data.team[0] || null : data.team || null,
+        });
+      }
       setLoading(false)
 
       const { data: attendanceData } = await supabase
@@ -367,10 +375,10 @@ export default function EventDetail() {
                 {format(new Date(event.end_time), 'HH:mm')}
               </div>
 
-              {event.teams.length > 0 && (
+              {event.team && (
                 <p className="text-sm text-muted-foreground">
                   {t('eventDetail.teams', 'Team: {{teams}}', {
-                    teams: event.teams.map(t => t.name).join(', ')
+                    teams: event.team.name
                   })}
                 </p>
               )}
