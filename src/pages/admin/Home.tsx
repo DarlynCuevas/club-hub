@@ -202,6 +202,19 @@ export default function Home() {
       {/* ===================================================== */}
       {role === 'super_admin' && (
         <section className="grid gap-3 mb-4">
+          {alerts.teamsWithoutCoach > 0 && (
+            <Card
+              className="border-l-4 border-red-500 cursor-pointer"
+              onClick={() => navigate('/teams')}
+            >
+              <CardContent className="p-4">
+                <p className="text-sm font-medium">
+                  {alerts.teamsWithoutCoach} equipos sin entrenador
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
           {alerts.unassignedPlayers > 0 && (
             <Card
               className="border-l-4 border-orange-500 cursor-pointer"
@@ -223,19 +236,6 @@ export default function Home() {
               <CardContent className="p-4">
                 <p className="text-sm font-medium">
                   {alerts.inactivePlayers} jugadores sin acceso activado
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          {alerts.teamsWithoutCoach > 0 && (
-            <Card
-              className="border-l-4 border-red-500 cursor-pointer"
-              onClick={() => navigate('/teams')}
-            >
-              <CardContent className="p-4">
-                <p className="text-sm font-medium">
-                  {alerts.teamsWithoutCoach} equipos sin entrenador
                 </p>
               </CardContent>
             </Card>
