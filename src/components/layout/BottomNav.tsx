@@ -19,7 +19,7 @@ export const getNavItems = (role: UserRole) => {
 
   if (role === 'parent') {
     return [
-      { to: '/home', icon: Home, label: 'Home' },
+      { to: '/parent/dashboard', icon: Home, label: 'Home' },
       { to: '/calendar', icon: Calendar, label: 'Calendar' },
       { to: '/messages', icon: MessageSquare, label: 'Messages' },
       { to: '/parent/players', icon: Users, label: 'Teams' },
