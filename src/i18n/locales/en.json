@@ -2,6 +2,15 @@
     "players": {
       "title": "Players (Admin)",
       "subtitle": "Club player management",
+      "noTeam": "Unassigned",
+      "clubLabel": "Club",
+      "teamLabel": "Team",
+      "activeAccess": "Active access",
+      "createBtn": "Create player"
+    },
+    "parentPlayers": {
+      "title": "My Children",
+      "subtitle": "Add and manage your children in the club",
       "createBtn": "Create player",
       "new": "New player",
       "club": "Club",
@@ -66,7 +75,7 @@
     "training": "Training"
   },
   "auth": {
-    "title": "ClubKit",
+    "title": "Club Barcelona Bears",
     "welcome": "Welcome back",
     "createAccount": "Create your account",
     "fullName": "Full Name",
@@ -88,6 +97,7 @@
   "teams": {
     "title": "Teams",
     "empty": "No teams assigned",
+    "emptyAdmin": "No teams created yet. Use the buttons above to create or manage teams, players, or centers.",
     "coachSubtitle": "Teams you coach",
     "userSubtitle": "Your teams",
     "manageCenters": "Manage centers",

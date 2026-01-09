@@ -96,19 +96,8 @@ export default function Auth() {
               </>
             ) : (
               <>
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground mb-4">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-7 h-7"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 6v6l4 2" />
-                  </svg>
+                <div className="inline-flex items-center justify-center w-48 h-48 rounded-2xl overflow-hidden">
+                  <img src="/PNG ESCUDO BEARS ACTUALIZADO 2025 (3).png" alt="App logo" className="w-44 h-44 object-contain" />
                 </div>
                 <h1 className="text-2xl font-semibold text-foreground">
                   {club?.name || t('auth.title')}

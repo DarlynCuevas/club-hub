@@ -46,7 +46,7 @@ export default function ResetPassword() {
       // Refrescar sesión para que el contexto se actualice
       await supabase.auth.refreshSession();
 
-    navigate('/player/dashboard', { replace: true })
+    window.location.href = 'http://localhost:8080/player/dashboard'
   }
 
   return (

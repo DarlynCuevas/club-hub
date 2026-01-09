@@ -16,10 +16,10 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import Auth from "./pages/Auth";
 import Centers from "./pages/admin/Centers";
 import RoleRedirect from "@/components/layout/RoleRedirect";
-import CalendarPage from "./pages/CalendarPage";
-import Messages from "./pages/Messages";
-import Teams from "./pages/admin/Teams";
-import Profile from "./pages/admin/Profile";
+import CalendarPage from "./pages/shared/CalendarPage";
+import Messages from "./pages/shared/Messages";
+import Teams from "./pages/shared/Teams";
+import Profile from "./pages/shared/Profile";
 import PlayerDashboard from "./pages/player/PlayerDashboard";
 import ResetPassword from "./pages/player/ResetPassword";
 import NotFound from "./pages/NotFound";
@@ -111,7 +111,7 @@ function AppRoutes() {
         break;
 
       case "parent":
-        navigate("/parent/", { replace: true });
+        navigate("/parent/dashboard", { replace: true });
         break;
 
       case "player":
@@ -154,10 +154,11 @@ function AppRoutes() {
         <Route path="/player/dashboard" element={<PlayerDashboard />} />
         <Route path="/parent/dashboard" element={<ParentDashboard />} />
         <Route path="/players" element={<Players />} />
+        <Route path="/parent/players" element={<Players />} />
         <Route path="/events/:eventId" element={<EventDetail />} />
 
         <Route path="/admin/events" element={<AdminEvents />} />
-        <Route path="/admin/teams" element={<Teams />} />
+        <Route path="/shared/teams" element={<Teams />} />
         <Route path="/admin/teams/:teamId" element={<TeamDetailAdmin />} />
         <Route path="/admin/players" element={<PlayersAdmin />} />
       </Route>

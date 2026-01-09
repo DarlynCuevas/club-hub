@@ -2,6 +2,15 @@
     "players": {
       "title": "Jugadores (Admin)",
       "subtitle": "Gestión de jugadores del club",
+      "noTeam": "Sin asignar",
+      "clubLabel": "Club",
+      "teamLabel": "Equipo",
+      "activeAccess": "Acceso activo",
+      "createBtn": "Crear jugador"
+    },
+    "parentPlayers": {
+      "title": "Mis hijos/as",
+      "subtitle": "Añade y gestiona tus hijos/as en el club",
       "createBtn": "Crear jugador",
       "new": "Nuevo jugador",
       "club": "Club",
@@ -68,7 +77,7 @@
       "training": "Entrenamiento"
     },
   "auth": {
-    "title": "ClubKit",
+    "title": "Club Barcelona Bears",
     "welcome": "Bienvenido de nuevo",
     "createAccount": "Crea tu cuenta",
     "fullName": "Nombre completo",
@@ -90,6 +99,8 @@
   "teams": {
     "title": "Equipos",
     "empty": "No hay equipos asignados",
+    "emptyAdmin": "Aún no hay equipos creados. Usa los botones de arriba para crear o gestionar equipos, jugadores o centers.",
+    "createPlayer": "Crear jugador",
     "coachSubtitle": "Equipos que entrenas",
     "userSubtitle": "Tus equipos",
     "manageCenters": "Gestionar centers",

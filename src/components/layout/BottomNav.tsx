@@ -8,7 +8,7 @@ import type { UserRole } from '@/types';
 export const getNavItems = (role: UserRole) => {
   if (role === 'player') {
     return [
-      { to: '/dashboard/player', icon: Home, label: 'Home' },
+      { to: '/player/dashboard', icon: Home, label: 'Home' },
       { to: '/calendar', icon: Calendar, label: 'Calendar' },
       { to: '/messages', icon: MessageSquare, label: 'Messages' },
       { to: '/profile', icon: User, label: 'Profile' },
@@ -16,12 +16,22 @@ export const getNavItems = (role: UserRole) => {
   }
 
 
-  if (role === 'parent' || role === 'coach') {
+
+  if (role === 'parent') {
     return [
       { to: '/home', icon: Home, label: 'Home' },
       { to: '/calendar', icon: Calendar, label: 'Calendar' },
       { to: '/messages', icon: MessageSquare, label: 'Messages' },
-      { to: '/admin/teams', icon: Users, label: 'Teams' },
+      { to: '/parent/players', icon: Users, label: 'Teams' },
+      { to: '/profile', icon: User, label: 'Profile' },
+    ];
+  }
+  if (role === 'coach') {
+    return [
+      { to: '/home', icon: Home, label: 'Home' },
+      { to: '/calendar', icon: Calendar, label: 'Calendar' },
+      { to: '/messages', icon: MessageSquare, label: 'Messages' },
+      { to: '/teams', icon: Users, label: 'Teams' },
       { to: '/profile', icon: User, label: 'Profile' },
     ];
   }
@@ -31,7 +41,7 @@ export const getNavItems = (role: UserRole) => {
       { to: '/home', icon: Home, label: 'Home' },
       { to: '/calendar', icon: Calendar, label: 'Calendar' },
       { to: '/messages', icon: MessageSquare, label: 'Messages' },
-      { to: '/admin/teams', icon: Users, label: 'Teams' },
+      { to: '/teams', icon: Users, label: 'Teams' },
       { to: '/profile', icon: User, label: 'Profile' },
     ];
   }
