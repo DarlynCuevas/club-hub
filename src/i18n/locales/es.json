@@ -70,11 +70,13 @@
     "parent": "Padre/Madre",
     "coach": "Entrenador/a",
     "player": "Jugador/a",
-    "club_admin": "Administrador/a"
+    "club_admin": "Administrador/a",
+    "super_admin": "Super admin"
   },
     "eventTypes": {
       "match": "Partido",
-      "training": "Entrenamiento"
+      "training": "Entrenamiento",
+      "meeting": "Reunión"
     },
   "auth": {
     "title": "Club Barcelona Bears",
