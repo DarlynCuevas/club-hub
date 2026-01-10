@@ -134,7 +134,6 @@ export default function Coaches() {
         {coaches.length === 0 ? (
           <div className="text-center py-10">
             <p className="mb-2">No hay entrenadores creados todavía</p>
-            <Button disabled>Crear coach (próximamente)</Button>
           </div>
         ) : (
           coaches.map(coach => {
