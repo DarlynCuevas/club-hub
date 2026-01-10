@@ -351,7 +351,7 @@ export default function Home() {
 
                 <div className="flex-1">
                   <Badge
-                    variant={event.type === 'match' ? 'default' : 'secondary'}
+                    variant='default'
                     className="mb-1 capitalize"
                   >
                     {t(`eventTypes.${event.type}`)}

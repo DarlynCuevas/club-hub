@@ -44,10 +44,11 @@ interface ParentEventRow {
   team_name: string;
   player_id: string;
   player_name: string;
+  scope: 'team' | 'club';
 }
 
 export default function CalendarPage() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const [hijosDelPadre, setHijosDelPadre] = useState<any[]>([]);
   // Función para obtener hijos asociados a un evento
   function getHijosAsociados(event: EventDB) {
@@ -65,44 +66,106 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [events, setEvents] = useState<EventDB[]>([])
   const [parentEvents, setParentEvents] = useState<ParentEventRow[]>([]);
+  const [clubNames, setClubNames] = useState<Record<string, string>>({});
+  const [teamNames, setTeamNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const location = useLocation()
+  // Cargar nombres de clubs y equipos para super_admin
+  useEffect(() => {
+    if (role !== 'super_admin' || events.length === 0) return;
+    const fetchNames = async () => {
+      // Clubs
+      const clubIds = Array.from(new Set(events.map(e => e.club_id).filter(Boolean)));
+      if (clubIds.length > 0) {
+        const { data: clubs } = await supabase
+          .from('clubs')
+          .select('id, name')
+          .in('id', clubIds);
+        if (clubs) {
+          const map: Record<string, string> = {};
+          clubs.forEach((c: any) => { map[c.id] = c.name; });
+          setClubNames(map);
+        }
+      }
+      // Teams
+      const teamIds = Array.from(new Set(events.map(e => e.team_id).filter(Boolean)));
+      if (teamIds.length > 0) {
+        const { data: teams } = await supabase
+          .from('teams')
+          .select('id, name')
+          .in('id', teamIds);
+        if (teams) {
+          const map: Record<string, string> = {};
+          teams.forEach((t: any) => { map[t.id] = t.name; });
+          setTeamNames(map);
+        }
+      }
+    };
+    fetchNames();
+  }, [role, events]);
 
   const monthStart = startOfMonth(currentMonth)
   const monthEnd = endOfMonth(currentMonth)
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd })
 
-  // 🔹 Load events (RLS handles filtering)
+  // 🔹 Load events según el rol
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       setError(null);
-      const { data, error } = await supabase
-        .from('parent_events_view')
-        .select(`
-        event_id,
-        title,
-        start_time,
-        end_time,
-        event_type,
-        cancelled,
-        team_id,
-        team_name,
-        player_id,
-        player_name
-      `)
-        .gte('start_time', new Date().toISOString())
-        .order('start_time', { ascending: true });
-      if (error) {
-        setError('Failed to load events');
+      if (role === 'super_admin') {
+        // Mostrar todos los eventos
+        const { data, error } = await supabase
+          .from('events')
+          .select('*')
+          .gte('start_time', new Date().toISOString())
+          .order('start_time', { ascending: true });
+           console.log('EVENTS DATA:', data); 
+        if (error) {
+          setError('Error al cargar los eventos');
+        } else {
+          setEvents(data || []);
+        }
       } else {
-        setParentEvents(data || []);
+        // Mantener lógica para padres/jugadores
+        const { data, error } = await supabase
+          .from('parent_events_view')
+          .select(`
+            event_id,
+            title,
+            start_time,
+            end_time,
+            event_type,
+            cancelled,
+            team_id,
+            team_name,
+            player_id,
+            player_name
+          `)
+          .gte('start_time', new Date().toISOString())
+          .order('start_time', { ascending: true });
+        if (error) {
+          setError('Failed to load events');
+        } else {
+          setParentEvents(
+            (data || []).map(ev => ({
+              ...ev,
+              scope:
+                ev.team_id &&
+                ev.team_id !== 'null' &&
+                ev.team_id !== 'undefined' &&
+                ev.team_id !== ''
+                  ? 'team'
+                  : 'club',
+            }))
+          );
+        }
       }
       setLoading(false);
     };
     load();
-  }, [location.key])
+  }, [location.key, role])
 
   useEffect(() => {
     const loadHijos = async () => {
@@ -153,15 +216,22 @@ export default function CalendarPage() {
   }
 
   // Events for selected date
-  const selectedEvents: EventDB[] = selectedDate
-    ? events.filter(e =>
-      isSameDay(new Date(e.start_time), selectedDate)
-    )
-    : []
-
-  // Days that have events
-  const hasEvent = (date: Date) =>
-    events.some(e => isSameDay(new Date(e.start_time), date))
+  let selectedAdminEvents: EventDB[] = [];
+  let selectedParentEvents: ParentEventRow[] = [];
+  let hasEvent = (date: Date) => false;
+  if (role === 'super_admin') {
+    selectedAdminEvents = selectedDate
+      ? events.filter(e => isSameDay(new Date(e.start_time), selectedDate))
+      : [];
+    hasEvent = (date: Date) =>
+      events.some(e => isSameDay(new Date(e.start_time), date));
+  } else {
+    selectedParentEvents = selectedDate
+      ? parentEvents.filter(e => isSameDay(new Date(e.start_time), selectedDate))
+      : [];
+    hasEvent = (date: Date) =>
+      parentEvents.some(e => isSameDay(new Date(e.start_time), date));
+  }
 
   if (loading) return <Spinner />
   if (error) return <div className="text-center text-muted-foreground">{error}</div>
@@ -270,12 +340,11 @@ export default function CalendarPage() {
       {selectedDate && (
         <section className="space-y-3">
           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-            {t(`calendar.weekdays.${selectedDate.getDay()}`)},{" "}
-            {t(`calendar.months.${selectedDate.getMonth()}`)}{" "}
-            {selectedDate.getDate()}
+            {t(`calendar.weekdays.${selectedDate.getDay()}`)}, {" "}
+            {t(`calendar.months.${selectedDate.getMonth()}`)} {selectedDate.getDate()}
           </h2>
 
-          {selectedEvents.length === 0 ? (
+          {(role === 'super_admin' ? selectedAdminEvents.length === 0 : selectedParentEvents.length === 0) ? (
             <Card className="shadow-card">
               <CardContent className="p-6 text-center">
                 <Calendar className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
@@ -286,50 +355,102 @@ export default function CalendarPage() {
             </Card>
           ) : (
             <div className="space-y-3">
-              {groupEventsById(parentEvents)
-                .filter(event => isSameDay(new Date(event.start_time), selectedDate))
-                .map(event => (
-                  <Card key={event.event_id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary" className="text-xs capitalize">
-                          {t(`eventTypes.${event.event_type}`)}
-                        </Badge>
-                        {event.cancelled && (
-                          <Badge variant="destructive" className="text-xs">
-                            Cancelado
-                          </Badge>
-                        )}
-                      </div>
+              {role === 'super_admin'
+                ? selectedAdminEvents.map(event => {
+                    // Determinar scope robustamente para super_admin
+                    let scope: 'team' | 'club' = 'club';
+                    if (
+                      event.team_id &&
+                      event.team_id !== 'null' &&
+                      event.team_id !== 'undefined' &&
+                      event.team_id !== ''
+                    ) {
+                      scope = 'team';
+                    }
+                    return (
+                      <Card key={event.id} onClick={() => navigate(`/events/${event.id}`)} className="cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant='default'
+                      className="mb-1 capitalize">
+                              {t(`eventTypes.${event.event_type}`)}
+                            </Badge>
+                            {event.cancelled && (
+                              <Badge variant="destructive" className="text-xs">
+                                Cancelado
+                              </Badge>
+                            )}
+                          </div>
 
-                      <p className="font-medium text-foreground">
-                        {event.title}
-                      </p>
-
-                      <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {format(new Date(event.start_time), 'HH:mm')} –{" "}
-                          {format(new Date(event.end_time), 'HH:mm')}
-                        </span>
-                      </div>
-
-                      {/* Equipos e hijos */}
-                      {Object.entries(event.teams as Record<string, { team_name: string; players: { player_id: string; player_name: string }[] }> ).map(([teamId, team]) => (
-                        <div key={teamId} className="mt-2">
-                          <p className="text-sm text-muted-foreground font-semibold">Equipo: {team.team_name}</p>
-                          <p className="text-xs text-primary font-semibold mt-1">
-                            {team.players.length === 1
-                              ? `Hijo: ${team.players[0].player_name}`
-                              : `Hijos: ${team.players.map(p => p.player_name).join(', ')}`}
+                          <p className="font-medium text-foreground">
+                            {event.title}
                           </p>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
+                          {scope === 'team' && (
+                            <Badge variant="outline" className="text-xs ml-1">Equipo</Badge>
+                          )}
+                          {scope === 'club' && (
+                            <Badge variant="outline" className="text-xs ml-1">Club</Badge>
+                          )}
 
+                          <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" />
+                              {format(new Date(event.start_time), 'HH:mm')} – {format(new Date(event.end_time), 'HH:mm')}
+                            </span>
+                          </div>
+
+                          {/* Mostrar nombre del club, equipo o etiqueta global */}
+                          {event.club_id && (
+                            <p className="text-xs text-muted-foreground mt-2">Club: {clubNames[event.club_id] || event.club_id}</p>
+                          )}
+                          {event.team_id && (
+                            <p className="text-xs text-muted-foreground">Equipo: {teamNames[event.team_id] || event.team_id}</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                : groupEventsById(selectedParentEvents)
+                  .map(event => (
+                      <Card key={event.event_id} onClick={() => navigate(`/events/${event.event_id}`)} className="cursor-pointer">
+                        <CardContent className="p-4">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="text-xs capitalize">
+                              {t(`eventTypes.${event.event_type}`)}
+                            </Badge>
+                            {event.cancelled && (
+                              <Badge variant="destructive" className="text-xs">
+                                Cancelado
+                              </Badge>
+                            )}
+                          </div>
+
+                          <p className="font-medium text-foreground">
+                            {event.title}
+                          </p>
+
+                          <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" />
+                              {format(new Date(event.start_time), 'HH:mm')} – {format(new Date(event.end_time), 'HH:mm')}
+                            </span>
+                          </div>
+
+                          {/* Equipos e hijos */}
+                          {Object.entries(event.teams as Record<string, { team_name: string; players: { player_id: string; player_name: string }[] }> ).map(([teamId, team]) => (
+                            <div key={teamId} className="mt-2">
+                              <p className="text-sm text-muted-foreground font-semibold">Equipo: {team.team_name}</p>
+                              <p className="text-xs text-primary font-semibold mt-1">
+                                {team.players.length === 1
+                                  ? `Hijo: ${team.players[0].player_name}`
+                                  : `Hijos: ${team.players.map(p => p.player_name).join(', ')}`}
+                              </p>
+                            </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    ))}
+            </div>
           )}
         </section>
       )}

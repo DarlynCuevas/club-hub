@@ -58,6 +58,7 @@ export type EventDB = {
   cancelled: boolean
   club_id: string
   team_id: string | null
+  scope: 'team' | 'club'
 
   teams?: {
     id?: string
