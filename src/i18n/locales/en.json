@@ -75,6 +75,26 @@
       "publishing": "Publishing…"
     }
   },
+  "auth": {
+      "title": "Club Barcelona Bears",
+      "welcome": "Welcome back",
+      "createAccount": "Create your account",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Alex Johnson",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "signIn": "Sign In",
+      "createAccountBtn": "Create Account",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "hasAccount": "Already have an account?",
+      "terms": "By continuing, you agree to our Terms of Service and Privacy Policy",
+      "pleaseFill": "Please fill in all fields",
+      "pleaseName": "Please enter your name",
+      "invalidCredentials": "Invalid credentials. Please try again."
+    },
   "home": {
     "greeting": {
       "morning": "Good morning",
@@ -97,26 +117,8 @@
       "training": "Training",
       "meeting": "Meeting"
     },
-    "auth": {
-      "title": "Club Barcelona Bears",
-      "welcome": "Welcome back",
-      "createAccount": "Create your account",
-      "fullName": "Full Name",
-      "fullNamePlaceholder": "Alex Johnson",
-      "email": "Email",
-      "emailPlaceholder": "you@example.com",
-      "password": "Password",
-      "passwordPlaceholder": "••••••••",
-      "signIn": "Sign In",
-      "createAccountBtn": "Create Account",
-      "noAccount": "Don't have an account?",
-      "signUp": "Sign up",
-      "hasAccount": "Already have an account?",
-      "terms": "By continuing, you agree to our Terms of Service and Privacy Policy",
-      "pleaseFill": "Please fill in all fields",
-      "pleaseName": "Please enter your name",
-      "invalidCredentials": "Invalid credentials. Please try again."
-    },
+    
+    
     "teams": {
       "title": "Teams",
       "empty": "No teams assigned",

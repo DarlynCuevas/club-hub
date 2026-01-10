@@ -99,26 +99,7 @@
       "training": "Entrenamiento",
       "meeting": "Reunión"
     },
-    "auth": {
-      "title": "Club Barcelona Bears",
-      "welcome": "Bienvenido de nuevo",
-      "createAccount": "Crea tu cuenta",
-      "fullName": "Nombre completo",
-      "fullNamePlaceholder": "Alex Johnson",
-      "email": "Correo electrónico",
-      "emailPlaceholder": "tu@email.com",
-      "password": "Contraseña",
-      "passwordPlaceholder": "••••••••",
-      "signIn": "Iniciar sesión",
-      "createAccountBtn": "Crear cuenta",
-      "noAccount": "¿No tienes cuenta?",
-      "signUp": "Regístrate",
-      "hasAccount": "¿Ya tienes cuenta?",
-      "terms": "Al continuar, aceptas nuestros Términos de servicio y Política de privacidad",
-      "pleaseFill": "Por favor, completa todos los campos",
-      "pleaseName": "Por favor, ingresa tu nombre",
-      "invalidCredentials": "Credenciales inválidas. Intenta de nuevo."
-    },
+   
     "teams": {
       "title": "Equipos",
       "empty": "No hay equipos asignados",
@@ -190,5 +171,25 @@
       "empty": "No hay centers creados.",
       "clubLabel": "Club"
     }
-  }
+  },
+   "auth": {
+      "title": "Club Barcelona Bears",
+      "welcome": "Bienvenido de nuevo",
+      "createAccount": "Crea tu cuenta",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "Alex Johnson",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "••••••••",
+      "signIn": "Iniciar sesión",
+      "createAccountBtn": "Crear cuenta",
+      "noAccount": "¿No tienes cuenta?",
+      "signUp": "Regístrate",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "terms": "Al continuar, aceptas nuestros Términos de servicio y Política de privacidad",
+      "pleaseFill": "Por favor, completa todos los campos",
+      "pleaseName": "Por favor, ingresa tu nombre",
+      "invalidCredentials": "Credenciales inválidas. Intenta de nuevo."
+    }
 }

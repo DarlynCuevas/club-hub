@@ -75,117 +75,115 @@
             "publishing": "Publicant…"
         }
     },
-    "home": {
-        "greeting": {
-            "morning": "Bon dia",
-            "afternoon": "Bona tarda",
-            "evening": "Bona nit",
-            "welcome": "Benvingut/da",
-            "children": "Els teus fills/es",
-            "upcomingEvents": "Propers esdeveniments",
-            "announcements": "Comunicats"
-        },
-        "roles": {
-            "parent": "Pare/Mare",
-            "coach": "Entrenador/a",
-            "player": "Jugador/a",
-            "club_admin": "Administrador/a",
-            "super_admin": "Super admin"
-        },
-        "eventTypes": {
-            "match": "Partit",
-            "training": "Entrenament",
-            "meeting": "Reunió"
-        },
-        "auth": {
-            "title": "Club Barcelona Bears",
-            "welcome": "Benvingut de nou",
-            "createAccount": "Crea el teu compte",
-            "fullName": "Nom complet",
-            "fullNamePlaceholder": "Alex Johnson",
-            "email": "Correu electrònic",
-            "emailPlaceholder": "el.teu@email.com",
-            "password": "Contrasenya",
-            "passwordPlaceholder": "••••••••",
-            "signIn": "Inicia sessió",
-            "createAccountBtn": "Crear compte",
-            "noAccount": "No tens compte?",
-            "signUp": "Registra't",
-            "hasAccount": "Ja tens compte?",
-            "terms": "En continuar, acceptes els nostres Termes del servei i Política de privacitat",
-            "pleaseFill": "Si us plau, omple tots els camps",
-            "pleaseName": "Si us plau, introdueix el teu nom",
-            "invalidCredentials": "Credencials invàlides. Torna-ho a provar."
-        },
-        "teams": {
-            "title": "Equips",
-            "empty": "No hi ha equips assignats",
-            "emptyAdmin": "Encara no hi ha equips creats. Utilitza els botons de dalt per crear o gestionar equips, jugadors o centres.",
-            "coachSubtitle": "Equips que entrenes",
-            "userSubtitle": "Els teus equips",
-            "manageCenters": "Gestionar centres",
-            "managePlayers": "Gestionar jugadors",
-            "createBtn": "Crear equip",
-            "new": "Crear equip",
-            "selectClub": "Selecciona un club",
-            "namePlaceholder": "Nom de l'equip",
-            "seasonPlaceholder": "Temporada (ex. 2025/2026)",
-            "center": "Centre",
-            "noCenter": "Sense centre",
-            "save": "Desar",
-            "edit": "Editar",
-            "delete": "Eliminar",
-            "noPlayers": "No hi ha jugadors assignats",
-            "createPlayer": {
-                "players.new": "Nou jugador",
-                "players.club": "Club",
-                "players.selectClub": "Selecciona un club",
-                "players.namePlaceholder": "Nom complet",
-                "players.birthDate": "Data de naixement",
-                "players.teamOptional": "Equip (opcional)",
-                "namePlaceholder": "Nom complet"
-            } 
-        },
-        "eventDetail": {
-            "notFound": "Esdeveniment no trobat",
-            "attendance": "Assistència",
-            "teams": "Equip: {{teams}}",
+    "greeting": {
+        "morning": "Bon dia",
+        "afternoon": "Bona tarda",
+        "evening": "Bona nit",
+        "welcome": "Benvingut/da",
+        "children": "Els teus fills/es",
+        "upcomingEvents": "Propers esdeveniments",
+        "announcements": "Comunicats"
+    },
+    "roles": {
+        "parent": "Pare/Mare",
+        "coach": "Entrenador/a",
+        "player": "Jugador/a",
+        "club_admin": "Administrador/a",
+        "super_admin": "Super admin"
+    },
+    "eventTypes": {
+        "match": "Partit",
+        "training": "Entrenament",
+        "meeting": "Reunió"
+    },
+    "auth": {
+        "title": "Club Barcelona Bears",
+        "welcome": "Benvingut de nou",
+        "createAccount": "Crea el teu compte",
+        "fullName": "Nom complet",
+        "fullNamePlaceholder": "Alex Johnson",
+        "email": "Correu electrònic",
+        "emailPlaceholder": "el.teu@email.com",
+        "password": "Contrasenya",
+        "passwordPlaceholder": "••••••••",
+        "signIn": "Inicia sessió",
+        "createAccountBtn": "Crear compte",
+        "noAccount": "No tens compte?",
+        "signUp": "Registra't",
+        "hasAccount": "Ja tens compte?",
+        "terms": "En continuar, acceptes els nostres Termes del servei i Política de privacitat",
+        "pleaseFill": "Si us plau, omple tots els camps",
+        "pleaseName": "Si us plau, introdueix el teu nom",
+        "invalidCredentials": "Credencials invàlides. Torna-ho a provar."
+    },
+    "teams": {
+        "title": "Equips",
+        "empty": "No hi ha equips assignats",
+        "emptyAdmin": "Encara no hi ha equips creats. Utilitza els botons de dalt per crear o gestionar equips, jugadors o centres.",
+        "coachSubtitle": "Equips que entrenes",
+        "userSubtitle": "Els teus equips",
+        "manageCenters": "Gestionar centres",
+        "managePlayers": "Gestionar jugadors",
+        "createBtn": "Crear equip",
+        "new": "Crear equip",
+        "selectClub": "Selecciona un club",
+        "namePlaceholder": "Nom de l'equip",
+        "seasonPlaceholder": "Temporada (ex. 2025/2026)",
+        "center": "Centre",
+        "noCenter": "Sense centre",
+        "save": "Desar",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "noPlayers": "No hi ha jugadors assignats",
+        "createPlayer": {
+            "players.new": "Nou jugador",
+            "players.club": "Club",
+            "players.selectClub": "Selecciona un club",
+            "players.namePlaceholder": "Nom complet",
+            "players.birthDate": "Data de naixement",
+            "players.teamOptional": "Equip (opcional)",
+            "namePlaceholder": "Nom complet"
+        }
+    },
+    "eventDetail": {
+        "notFound": "Esdeveniment no trobat",
+        "attendance": "Assistència",
+        "teams": "Equip: {{teams}}",
+        "present": "Present",
+        "absent": "Absent",
+        "status": {
             "present": "Present",
             "absent": "Absent",
-            "status": {
-                "present": "Present",
-                "absent": "Absent",
-                "unknown": "Desconegut"
-            },
-            "date": "{{start}} – {{end}}"
+            "unknown": "Desconegut"
         },
-        "common": {
-            "back": "Cancel·lar",
-            "cancel": "Cancel·lar"
-        },
-        "profile": {
-            "accountSettings": "Configuració del compte",
-            "privacy": "Privacitat",
-            "helpSupport": "Ajuda i suport",
-            "demoSwitchRole": "Demo: Canvia el rol",
-            "language": "Idioma",
-            "signOut": "Tanca sessió",
-            "version": "ClubKit v{{version}}"
-        },
-        "centers": {
-            "loading": "Carregant centres...",
-            "title": "Centres",
-            "subtitle": "Gestiona les instal·lacions dels clubs",
-            "create": "Crear centre",
-            "new": "Nou centre",
-            "club": "Club",
-            "selectClub": "Selecciona un club",
-            "name": "Nom del centre",
-            "address": "Adreça",
-            "addressPlaceholder": "Opcional",
-            "createBtn": "Crear",
-            "empty": "No hi ha centres creats.",
-            "clubLabel": "Club"
-        }
+        "date": "{{start}} – {{end}}"
+    },
+    "common": {
+        "back": "Cancel·lar",
+        "cancel": "Cancel·lar"
+    },
+    "profile": {
+        "accountSettings": "Configuració del compte",
+        "privacy": "Privacitat",
+        "helpSupport": "Ajuda i suport",
+        "demoSwitchRole": "Demo: Canvia el rol",
+        "language": "Idioma",
+        "signOut": "Tanca sessió",
+        "version": "ClubKit v{{version}}"
+    },
+    "centers": {
+        "loading": "Carregant centres...",
+        "title": "Centres",
+        "subtitle": "Gestiona les instal·lacions dels clubs",
+        "create": "Crear centre",
+        "new": "Nou centre",
+        "club": "Club",
+        "selectClub": "Selecciona un club",
+        "name": "Nom del centre",
+        "address": "Adreça",
+        "addressPlaceholder": "Opcional",
+        "createBtn": "Crear",
+        "empty": "No hi ha centres creats.",
+        "clubLabel": "Club"
     }
 }
