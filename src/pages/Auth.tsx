@@ -74,7 +74,7 @@ export default function Auth() {
               <>
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground mb-4 overflow-hidden">
                   {club.logoUrl ? (
-                    <img src={club.logoUrl} alt="Club logo" className="w-12 h-12 object-contain" />
+                    <img src="https://jezehgemafbbplfajjoo.supabase.co/storage/v1/object/public/club-bears/logos/f7efc03d-3f4f-4283-bfe5-aa86b4f66a3f.png" alt="Club logo" className="w-12 h-12 object-contain" />
                   ) : (
                     <svg
                       viewBox="0 0 24 24"

@@ -142,11 +142,21 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Logo (URL)</label>
+                  <label className="block text-sm font-medium mb-1">Logo (imagen)</label>
                   <input
+                    type="file"
+                    accept="image/*"
                     className="w-full border rounded px-3 py-2"
-                    value={editLogo}
-                    onChange={e => setEditLogo(e.target.value)}
+                    onChange={async e => {
+                      const file = e.target.files?.[0];
+                      if (!file || !clubId) return;
+                      const filePath = `logos/${clubId}.png`;
+                      const { error } = await supabase.storage.from('club-bears').upload(filePath, file, { upsert: true, contentType: file.type });
+                      if (!error) {
+                        const { data } = supabase.storage.from('club-bears').getPublicUrl(filePath);
+                        setEditLogo(`${data.publicUrl}?t=${Date.now()}`);
+                      }
+                    }}
                   />
                   {editLogo && (
                     <img src={editLogo} alt="Preview" className="mt-2 w-16 h-16 object-contain" />

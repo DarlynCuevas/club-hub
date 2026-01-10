@@ -21,7 +21,7 @@ export function AppLayout() {
         <header className="flex items-center gap-3 px-4 py-3 border-b border-border bg-background">
           <div className="w-10 h-10 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
             {club.logoUrl ? (
-              <img src={club.logoUrl} alt="Club logo" className="w-8 h-8 object-contain" />
+              <img src={`${club.logoUrl}?t=${Date.now()}`} alt="Club logo" className="w-8 h-8 object-contain" />
             ) : null}
           </div>
           <span className="font-semibold text-lg text-foreground">{club.name}</span>
