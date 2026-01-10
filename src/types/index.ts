@@ -49,14 +49,20 @@ export interface Player {
   user_id?: string | null
 }
 
-export interface EventDB {
+export type EventDB = {
   id: string
   title: string
   start_time: string
-  cancelled?: boolean
   end_time: string
-  event_type: 'training' | 'match' | 'meeting' | 'other'
-  teams: { name: string }[]
+  event_type: string
+  cancelled: boolean
+  club_id: string
+  team_id: string | null
+
+  teams?: {
+    id?: string
+    name: string
+  }
 }
 
 export type Message = {
@@ -76,4 +82,12 @@ export interface AuthState {
   clubId?: string;
   isAuthenticated: boolean;
   isLoading: boolean;
+}
+export type HijoPadre = {
+  id: string
+  full_name: string
+
+  team_players?: {
+    team_id: string
+  }[]
 }

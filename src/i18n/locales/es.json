@@ -86,6 +86,11 @@
     "upcomingEvents": "Próximos eventos",
     "announcements": "Comunicados"
   },
+  "eventTypes": {
+      "match": "Partido",
+      "training": "Entrenamiento",
+      "meeting": "Reunión"
+    },
   "roles": {
     "parent": "Padre/Madre",
     "coach": "Entrenador/a",
@@ -95,11 +100,7 @@
       "club_admin": "Administrador/a",
       "super_admin": "Super admin"
     },
-    "eventTypes": {
-      "match": "Partido",
-      "training": "Entrenamiento",
-      "meeting": "Reunión"
-    },
+    
    
     "teams": {
       "title": "Equipos",

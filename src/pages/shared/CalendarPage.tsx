@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useLocation } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 
 import {
   Calendar,
@@ -25,12 +26,45 @@ import { EventDB } from '@/types'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
+type HijoPadre = { id: string; full_name: string; team_ids: string[] }
+
+interface CalendarPageProps {
+  hijosDelPadre: HijoPadre[]
+}
+
+// 1. Definir el tipo para la view
+interface ParentEventRow {
+  event_id: string;
+  title: string;
+  start_time: string;
+  end_time: string;
+  event_type: string;
+  cancelled: boolean;
+  team_id: string;
+  team_name: string;
+  player_id: string;
+  player_name: string;
+}
+
 export default function CalendarPage() {
+  const { user } = useAuth();
+  const [hijosDelPadre, setHijosDelPadre] = useState<any[]>([]);
+  // Función para obtener hijos asociados a un evento
+  function getHijosAsociados(event: EventDB) {
+    if (!event.team_id) return [];
+    return hijosDelPadre.filter(hijo =>
+      Array.isArray(hijo.team_players) &&
+      hijo.team_players.some(tp => tp.team_id === event.team_id)
+    );
+  }
+  const [hijosLoading, setHijosLoading] = useState(true);
+
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [events, setEvents] = useState<EventDB[]>([])
+  const [parentEvents, setParentEvents] = useState<ParentEventRow[]>([]);
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const location = useLocation()
@@ -42,42 +76,87 @@ export default function CalendarPage() {
   // 🔹 Load events (RLS handles filtering)
   useEffect(() => {
     const load = async () => {
-      setLoading(true)
-      setError(null)
-
+      setLoading(true);
+      setError(null);
       const { data, error } = await supabase
-        .from('events')
+        .from('parent_events_view')
         .select(`
-           id,
-          title,
-          start_time,
-          end_time,
-          event_type,
-          cancelled,
-          club_id,
-          team_id,
-          team:team_id ( name )
-          `)
-            .returns<any[]>()
-
-
+        event_id,
+        title,
+        start_time,
+        end_time,
+        event_type,
+        cancelled,
+        team_id,
+        team_name,
+        player_id,
+        player_name
+      `)
+        .gte('start_time', new Date().toISOString())
+        .order('start_time', { ascending: true });
       if (error) {
-        setError('Failed to load events')
+        setError('Failed to load events');
       } else {
-        setEvents(data || [])
+        setParentEvents(data || []);
       }
-
-      setLoading(false)
-    }
-
-    load()
+      setLoading(false);
+    };
+    load();
   }, [location.key])
+
+  useEffect(() => {
+    const loadHijos = async () => {
+      if (!user?.id) return;
+      setHijosLoading(true);
+
+      const { data: hijos } = await supabase
+        .from('players')
+        .select(`
+  id,
+  full_name,
+  team_players!team_players_player_fk ( team_id )
+`)
+        .eq('parent_user_id', user.id);
+
+      setHijosDelPadre(hijos ?? []);
+      setHijosLoading(false);
+    };
+
+    loadHijos();
+  }, [user]);
+
+
+  // Agrupar por evento
+  function groupEventsById(rows: ParentEventRow[]) {
+    type TeamGroup = { team_name: string; players: { player_id: string; player_name: string }[] };
+    const map = new Map<string, any>();
+    for (const row of rows) {
+      if (!map.has(row.event_id)) {
+        map.set(row.event_id, {
+          ...row,
+          teams: {} as Record<string, TeamGroup>,
+        });
+      }
+      const event = map.get(row.event_id);
+      if (!event.teams[row.team_id]) {
+        event.teams[row.team_id] = {
+          team_name: row.team_name,
+          players: [],
+        };
+      }
+      event.teams[row.team_id].players.push({
+        player_id: row.player_id,
+        player_name: row.player_name,
+      });
+    }
+    return Array.from(map.values());
+  }
 
   // Events for selected date
   const selectedEvents: EventDB[] = selectedDate
     ? events.filter(e =>
-        isSameDay(new Date(e.start_time), selectedDate)
-      )
+      isSameDay(new Date(e.start_time), selectedDate)
+    )
     : []
 
   // Days that have events
@@ -121,6 +200,18 @@ export default function CalendarPage() {
             >
               <ChevronRight className="w-5 h-5" />
             </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setCurrentMonth(new Date())
+                setSelectedDate(new Date())
+              }}
+              className="ml-2"
+            >
+              Hoy
+            </Button>
           </div>
 
           {/* Day labels */}
@@ -155,9 +246,8 @@ export default function CalendarPage() {
                   className={`
                     aspect-square rounded-full flex flex-col items-center justify-center relative
                     text-sm transition-colors
-                    ${
-                      isSelected
-                        ? 'bg-primary text-primary-foreground'
+                    ${isSelected
+                      ? 'bg-primary text-primary-foreground'
                       : isToday
                         ? 'bg-secondary font-medium'
                         : 'hover:bg-muted'
@@ -196,29 +286,20 @@ export default function CalendarPage() {
             </Card>
           ) : (
             <div className="space-y-3">
-              {selectedEvents.map(event => {
-                const isPast =
-                  new Date(event.end_time) < new Date()
-
-                const isToday =
-                  isSameDay(new Date(event.start_time), new Date())
-
-                return (
-                  <Card
-                    key={event.id}
-                    onClick={() => navigate(`/events/${event.id}`)}
-                    className={cn(
-                      'shadow-card cursor-pointer transition',
-                      isPast && 'opacity-60',
-                      isToday && 'ring-1 ring-primary/40',
-                      'hover:bg-muted/40'
-                    )}
-                  >
+              {groupEventsById(parentEvents)
+                .filter(event => isSameDay(new Date(event.start_time), selectedDate))
+                .map(event => (
+                  <Card key={event.event_id}>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge variant="secondary" className="text-xs capitalize">
                           {t(`eventTypes.${event.event_type}`)}
                         </Badge>
+                        {event.cancelled && (
+                          <Badge variant="destructive" className="text-xs">
+                            Cancelado
+                          </Badge>
+                        )}
                       </div>
 
                       <p className="font-medium text-foreground">
@@ -233,21 +314,25 @@ export default function CalendarPage() {
                         </span>
                       </div>
 
-                      {event.team && (
-                        <p className="text-sm text-muted-foreground mt-2">
-                          {event.team.name}
-                        </p>
-                      )}
+                      {/* Equipos e hijos */}
+                      {Object.entries(event.teams as Record<string, { team_name: string; players: { player_id: string; player_name: string }[] }> ).map(([teamId, team]) => (
+                        <div key={teamId} className="mt-2">
+                          <p className="text-sm text-muted-foreground font-semibold">Equipo: {team.team_name}</p>
+                          <p className="text-xs text-primary font-semibold mt-1">
+                            {team.players.length === 1
+                              ? `Hijo: ${team.players[0].player_name}`
+                              : `Hijos: ${team.players.map(p => p.player_name).join(', ')}`}
+                          </p>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
-                )
-              })}
+                ))}
             </div>
 
           )}
         </section>
- )}
+      )}
     </div>
   )
 }
-      

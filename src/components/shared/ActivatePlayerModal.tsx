@@ -34,7 +34,6 @@ export default function ActivatePlayerModal({ playerId, onSuccess, role = 'playe
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     const access_token = sessionData?.session?.access_token;
 
-    console.log('Access token:', access_token);
 
     if (!access_token) {
       setError('No hay sesión activa. Por favor, vuelve a iniciar sesión.');

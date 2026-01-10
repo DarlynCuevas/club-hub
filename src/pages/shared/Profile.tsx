@@ -74,13 +74,32 @@ export default function Profile() {
     role === 'super_admin' || role === 'coach'
 
   const [accountOpen, setAccountOpen] = useReactState(false)
+  const [manageOpen, setManageOpen] = useReactState(false)
+  const [createOpen, setCreateOpen] = useState(false)
+  const [teams, setTeams] = useState<any[]>([])
+
+  // Load events for CreateEventModal
+  const [events, setEvents] = useState<any[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+  const loadEvents = async () => {
+    setLoadingEvents(true);
+    setEventsError(null);
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('start_time', { ascending: true });
+    if (error) setEventsError('Error al cargar eventos');
+    setEvents(data || []);
+    setLoadingEvents(false);
+  };
   const menuItems = [
     ...(canManageEvents
       ? [
         {
           icon: Calendar,
-          label: 'Manage events',
-          action: () => navigate('/admin/events'),
+          label: 'Gestionar eventos',
+          action: () => setManageOpen(true),
         },
       ]
       : []),
@@ -93,6 +112,14 @@ export default function Profile() {
     { icon: HelpCircle, label: 'Help & Support', action: () => { } },
   ];
 
+  useEffect(() => {
+    async function fetchTeams() {
+      if (!clubId) return;
+      const { data } = await supabase.from('teams').select('id, name').eq('club_id', clubId);
+      setTeams(data || []);
+    }
+    if (role === 'super_admin' || role === 'coach') fetchTeams();
+  }, [clubId, role]);
 
   return (
     <div className="px-4 pt-6 pb-6 space-y-6">
@@ -259,6 +286,219 @@ export default function Profile() {
       <p className="text-center text-xs text-muted-foreground">
         {t('profile.version', { version: '1.0.0' })}
       </p>
+
+      {/* NUEVO: Modal para crear evento */}
+      <CreateEventModal open={createOpen} onOpenChange={setCreateOpen} teams={teams} onEventCreated={loadEvents} />
+      {/* NUEVO: Gestión de eventos (modal y listado) */}
+      <ManageEventsModal open={manageOpen} onOpenChange={setManageOpen} teams={teams} />
     </div>
   )
+}
+
+// NUEVO: Modal para crear evento
+function CreateEventModal({ open, onOpenChange, teams, onEventCreated }) {
+  const [scope, setScope] = useState<'global' | 'team'>('global');
+  const [title, setTitle] = useState('');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const [eventType, setEventType] = useState('training');
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { clubId } = useAuth();
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    if (!clubId) {
+      setError('No se ha encontrado el club. Reintenta o contacta con soporte.');
+      setSaving(false);
+      return;
+    }
+    if (scope === 'team' && selectedTeams.length === 0) {
+      setError('Debes seleccionar al menos un equipo');
+      setSaving(false);
+      return;
+    }
+    try {
+      // Obtener el access_token de la sesión actual
+      const { data: sessionData } = await supabase.auth.getSession();
+      const access_token = sessionData?.session?.access_token;
+      if (!access_token) {
+        setError('No hay sesión activa. Por favor, vuelve a iniciar sesión.');
+        setSaving(false);
+        return;
+      }
+      const response = await fetch('https://jezehgemafbbplfajjoo.supabase.co/functions/v1/create-event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`,
+        },
+        body: JSON.stringify({
+          title,
+          start_time: start,
+          end_time: end,
+          event_type: eventType,
+          scope,
+          club_id: clubId,
+          team_ids: scope === 'team' ? selectedTeams : undefined,
+        }),
+      });
+      const text = await response.text();
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch {
+        result = { raw: text };
+      }
+      if (!response.ok || result.error) {
+        setError(result.error || 'Error al crear el evento');
+      } else {
+        onEventCreated?.();
+        onOpenChange(false);
+      }
+    } catch (e) {
+      setError('Error inesperado al crear el evento');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Crear evento</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          {/* Paso 1: Selector de alcance */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Tipo de evento</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
+                <input type="radio" checked={scope === 'global'} onChange={() => setScope('global')} />
+                Evento del club
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" checked={scope === 'team'} onChange={() => setScope('team')} />
+                Evento de equipo
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {scope === 'global'
+                ? 'Visible para todos los jugadores y padres'
+                : 'Visible solo para los equipos seleccionados'}
+            </p>
+          </div>
+          {/* Paso 2: Formulario dinámico */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Título</label>
+            <input className="w-full border rounded px-3 py-2" value={title} onChange={e => setTitle(e.target.value)} />
+          </div>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1">Fecha y hora inicio</label>
+              <input type="datetime-local" className="w-full border rounded px-3 py-2" value={start} onChange={e => setStart(e.target.value)} />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1">Fecha y hora fin</label>
+              <input type="datetime-local" className="w-full border rounded px-3 py-2" value={end} onChange={e => setEnd(e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Tipo</label>
+            <select className="w-full border rounded px-3 py-2" value={eventType} onChange={e => setEventType(e.target.value)}>
+              <option value="training">Entrenamiento</option>
+              <option value="match">Partido</option>
+              <option value="meeting">Reunión</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+          {scope === 'team' && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Equipos</label>
+              <select
+                multiple
+                className="w-full border rounded px-3 py-2"
+                value={selectedTeams}
+                onChange={e => setSelectedTeams(Array.from(e.target.selectedOptions, o => o.value))}
+              >
+                {teams.map(team => (
+                  <option key={team.id} value={team.id}>{team.name}</option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1">Selecciona uno o más equipos</p>
+            </div>
+          )}
+          {error && <p className="text-xs text-destructive mt-2">{error}</p>}
+          <div className="flex gap-2 mt-4">
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? 'Guardando...' : 'Crear evento'}
+            </Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// NUEVO: Gestión de eventos (modal y listado)
+function ManageEventsModal({ open, onOpenChange, teams }) {
+  const [createOpen, setCreateOpen] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadEvents = async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('start_time', { ascending: true });
+    if (error) setError('Error al cargar eventos');
+    setEvents(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (open) loadEvents();
+  }, [open]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Gestión de eventos</DialogTitle>
+        </DialogHeader>
+        <div className="flex justify-end mb-2">
+          <Button onClick={() => setCreateOpen(true)}>+ Crear evento</Button>
+        </div>
+        {loading ? (
+          <p>Cargando eventos...</p>
+        ) : error ? (
+          <p className="text-destructive">{error}</p>
+        ) : (
+          <div className="space-y-2">
+            {events.map(ev => (
+              <div key={ev.id} className="border rounded p-2 flex items-center gap-2">
+                <span className="font-medium">{ev.title}</span>
+                <Badge variant="secondary" className="ml-2">
+                  {ev.scope === 'global' ? 'Club' : 'Equipo'}
+                </Badge>
+                <span className="text-xs text-muted-foreground ml-auto">
+                  {new Date(ev.start_time).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+        <CreateEventModal open={createOpen} onOpenChange={setCreateOpen} teams={teams} onEventCreated={loadEvents} />
+      </DialogContent>
+    </Dialog>
+  );
 }

@@ -111,7 +111,9 @@
     "coach": "Coach",
     "player": "Player",
     "club_admin": "Club Admin",
-    "super_admin": "Super admin",
+    "super_admin": "Super admin"
+    
+    },
     "eventTypes": {
       "match": "Match",
       "training": "Training",
@@ -190,4 +192,3 @@
       "clubLabel": "Club"
     }
   }
-}

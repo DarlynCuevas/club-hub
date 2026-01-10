@@ -93,7 +93,7 @@
     },
     "eventTypes": {
         "match": "Partit",
-        "training": "Entrenament",
+        "raining": "Entrenament",
         "meeting": "Reunió"
     },
     "auth": {
