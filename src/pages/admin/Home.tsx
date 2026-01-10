@@ -333,7 +333,7 @@ export default function Home() {
         {upcomingEvents.length === 0 ? (
           <Card>
             <CardContent className="p-4 text-sm text-muted-foreground">
-              {t('home.noEvents')}
+              {t('calendar.noEvents')}
             </CardContent>
           </Card>
         ) : (

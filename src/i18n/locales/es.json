@@ -90,6 +90,7 @@
     "parent": "Padre/Madre",
     "coach": "Entrenador/a",
     "player": "Jugador/a",
+    "super_admin": "Super admin",
     "players": {
       "club_admin": "Administrador/a",
       "super_admin": "Super admin"
