@@ -70,38 +70,12 @@ export default function Auth() {
         <div className="mx-auto w-full max-w-sm">
           {/* Logo/Brand */}
           <div className="text-center mb-10">
-            {club?.logoUrl || club?.name ? (
-              <>
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary text-primary-foreground mb-4 overflow-hidden">
-                    <img src="https://jezehgemafbbplfajjoo.supabase.co/storage/v1/object/public/club-bears/logos/f7efc03d-3f4f-4283-bfe5-aa86b4f66a3f.png" alt="Club logo" className="w-12 h-12 object-contain" />
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-7 h-7"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 6v6l4 2" />
-                    </svg>
-                  )}
-                </div>
-                <h1 className="text-2xl font-semibold text-foreground">
-                  {club.name}
-                </h1>
-              </>
-            ) : (
-              <>
-                <div className="inline-flex items-center justify-center w-48 h-48 rounded-2xl overflow-hidden">
-                  <img src="/PNG ESCUDO BEARS ACTUALIZADO 2025 (3).png" alt="App logo" className="w-44 h-44 object-contain" />
-                </div>
-                <h1 className="text-2xl font-semibold text-foreground">
-                  {club?.name || t('auth.title')}
-                </h1>
-              </>
-            )}
+            <div className="inline-flex items-center justify-center w-48 h-48 rounded-2xl mb-4 overflow-hidden p-0">
+              <img src="https://jezehgemafbbplfajjoo.supabase.co/storage/v1/object/public/club-bears/logos/f7efc03d-3f4f-4283-bfe5-aa86b4f66a3f.png" alt="Club logo" className="w-full h-full object-cover" />
+            </div>
+            <h1 className="text-2xl font-semibold text-foreground">
+              {club?.name || t('auth.title')}
+            </h1>
             <p className="text-muted-foreground mt-2">
               {isLogin ? t('auth.welcome') : t('auth.createAccount')}
             </p>
