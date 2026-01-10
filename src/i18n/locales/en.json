@@ -1,46 +1,69 @@
-{ 
-    "players": {
-      "title": "Players (Admin)",
-      "subtitle": "Club player management",
-      "noTeam": "Unassigned",
-      "clubLabel": "Club",
-      "teamLabel": "Team",
-      "activeAccess": "Active access",
-      "createBtn": "Create player"
-    },
-    "parentPlayers": {
-      "title": "My Children",
-      "subtitle": "Add and manage your children in the club",
-      "createBtn": "Create player",
-      "new": "New player",
-      "club": "Club",
-      "selectClub": "Select a club",
-      "namePlaceholder": "Full name",
-      "birthDate": "Birth date",
-      "teamOptional": "Team (optional)",
-      "noTeam": "Unassigned",
-      "clubLabel": "Club",
-      "teamLabel": "Team",
-      "activeAccess": "Active access"
-    },
+{
+  "players": {
+    "title": "Players (Admin)",
+    "subtitle": "Club player management",
+    "noTeam": "Unassigned",
+    "clubLabel": "Club",
+    "teamLabel": "Team",
+    "activeAccess": "Active access",
+    "createBtn": "Create player"
+  },
+  "parentPlayers": {
+    "title": "My Children",
+    "subtitle": "Add and manage your children in the club",
+    "new": "New player",
+    "club": "Club",
+    "selectClub": "Select a club",
+    "namePlaceholder": "Full name",
+    "birthDate": "Birth date",
+    "teamOptional": "Team (optional)",
+    "noTeam": "Unassigned",
+    "clubLabel": "Club",
+    "teamLabel": "Team",
+    "activeAccess": "Active access"
+  },
   "adminEvents": {
     "title": "Events",
     "new": "New event",
     "noAccess": "You don’t have access to this section",
     "listPlaceholder": "Event list will go here"
   },
-
-    "calendar": {
-      "title": "Calendar",
-      "days": ["S", "M", "T", "W", "T", "F", "S"],
-      "noEvents": "No events scheduled",
-      "months": [
-        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-      ],
-      "weekdays": [
-        "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-      ]
-    },
+  "calendar": {
+    "title": "Calendar",
+    "days": [
+      "S",
+      "M",
+      "T",
+      "W",
+      "T",
+      "F",
+      "S"
+    ],
+    "noEvents": "No events scheduled",
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "weekdays": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
+  },
   "messages": {
     "title": "Messages",
     "empty": "No announcements",
@@ -52,7 +75,6 @@
       "publishing": "Publishing…"
     }
   },
-  
   "home": {
     "greeting": {
       "morning": "Good morning",
@@ -69,93 +91,101 @@
     "coach": "Coach",
     "player": "Player",
     "club_admin": "Club Admin",
-    "super_admin": "Super admin"
-  },
-  "eventTypes": {
-    "match": "Match",
-    "training": "Training",
-    "meeting": "Meeting"
-  },
-  "auth": {
-    "title": "Club Barcelona Bears",
-    "welcome": "Welcome back",
-    "createAccount": "Create your account",
-    "fullName": "Full Name",
-    "fullNamePlaceholder": "Alex Johnson",
-    "email": "Email",
-    "emailPlaceholder": "you@example.com",
-    "password": "Password",
-    "passwordPlaceholder": "••••••••",
-    "signIn": "Sign In",
-    "createAccountBtn": "Create Account",
-    "noAccount": "Don't have an account?",
-    "signUp": "Sign up",
-    "hasAccount": "Already have an account?",
-    "terms": "By continuing, you agree to our Terms of Service and Privacy Policy",
-    "pleaseFill": "Please fill in all fields",
-    "pleaseName": "Please enter your name",
-    "invalidCredentials": "Invalid credentials. Please try again."
-  },
-  "teams": {
-    "title": "Teams",
-    "empty": "No teams assigned",
-    "emptyAdmin": "No teams created yet. Use the buttons above to create or manage teams, players, or centers.",
-    "coachSubtitle": "Teams you coach",
-    "userSubtitle": "Your teams",
-    "manageCenters": "Manage centers",
-    "managePlayers": "Manage players",
-    "createBtn": "Create team",
-    "new": "Create team",
-    "selectClub": "Select a club",
-    "namePlaceholder": "Team name",
-    "seasonPlaceholder": "Season (e.g. 2025/2026)",
-    "center": "Center",
-    "noCenter": "No center",
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "noPlayers": "No players assigned"
-  },
-  "common": {
-    "back": "Cancel",
-    "cancel": "Cancel"
-  },
-
-  "eventDetail": {
-    "notFound": "Event not found",
-    "attendance": "Attendance",
-    "teams": "Team: {{teams}}",
-    "present": "Present",
-    "absent": "Absent",
-    "status": {
+    "super_admin": "Super admin",
+    "eventTypes": {
+      "match": "Match",
+      "training": "Training",
+      "meeting": "Meeting"
+    },
+    "auth": {
+      "title": "Club Barcelona Bears",
+      "welcome": "Welcome back",
+      "createAccount": "Create your account",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Alex Johnson",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "signIn": "Sign In",
+      "createAccountBtn": "Create Account",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "hasAccount": "Already have an account?",
+      "terms": "By continuing, you agree to our Terms of Service and Privacy Policy",
+      "pleaseFill": "Please fill in all fields",
+      "pleaseName": "Please enter your name",
+      "invalidCredentials": "Invalid credentials. Please try again."
+    },
+    "teams": {
+      "title": "Teams",
+      "empty": "No teams assigned",
+      "emptyAdmin": "No teams created yet. Use the buttons above to create or manage teams, players, or centers.",
+      "coachSubtitle": "Teams you coach",
+      "userSubtitle": "Your teams",
+      "manageCenters": "Manage centers",
+      "managePlayers": "Manage players",
+      "createBtn": "Create team",
+      "new": "Create team",
+      "selectClub": "Select a club",
+      "namePlaceholder": "Team name",
+      "seasonPlaceholder": "Season (e.g. 2025/2026)",
+      "center": "Center",
+      "noCenter": "No center",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "noPlayers": "No players assigned",
+       "createPlayer": {
+                "players.new": "New player",
+                "players.club": "Club",
+                "players.selectClub": "Select a club",
+                "players.namePlaceholder": "Full name",
+                "players.birthDate": "Date of birth",
+                "players.teamOptional": "Team (optional)",
+                "namePlaceholder": "Full name"
+            } 
+    },
+    "common": {
+      "back": "Cancel",
+      "cancel": "Cancel"
+    },
+    "eventDetail": {
+      "notFound": "Event not found",
+      "attendance": "Attendance",
+      "teams": "Team: {{teams}}",
       "present": "Present",
       "absent": "Absent",
-      "unknown": "Unknown"
+      "status": {
+        "present": "Present",
+        "absent": "Absent",
+        "unknown": "Unknown"
+      },
+      "date": "{{start}} – {{end}}"
     },
-    "date": "{{start}} – {{end}}"
-  },
-   "profile": {
-    "accountSettings": "Account Settings",
-    "privacy": "Privacy",
-    "helpSupport": "Help & Support",
-    "demoSwitchRole": "Demo: Switch Role",
-    "language": "Language",
-    "signOut": "Sign Out",
-    "version": "ClubKit v{{version}}"
-  },
-  "centers": {
-    "loading": "Loading centers...",
-    "title": "Centers",
-    "subtitle": "Manage club facilities",
-    "create": "Create center",
-    "new": "New center",
-    "club": "Club",
-    "selectClub": "Select a club",
-    "name": "Center name",
-    "address": "Address",
-    "addressPlaceholder": "Optional",
-    "createBtn": "Create",
-    "empty": "No centers created.",
-    "clubLabel": "Club"
+    "profile": {
+      "accountSettings": "Account Settings",
+      "privacy": "Privacy",
+      "helpSupport": "Help & Support",
+      "demoSwitchRole": "Demo: Switch Role",
+      "language": "Language",
+      "signOut": "Sign Out",
+      "version": "ClubKit v{{version}}"
+    },
+    "centers": {
+      "loading": "Loading centers...",
+      "title": "Centers",
+      "subtitle": "Manage club facilities",
+      "create": "Create center",
+      "new": "New center",
+      "club": "Club",
+      "selectClub": "Select a club",
+      "name": "Center name",
+      "address": "Address",
+      "addressPlaceholder": "Optional",
+      "createBtn": "Create",
+      "empty": "No centers created.",
+      "clubLabel": "Club"
+    }
   }
 }

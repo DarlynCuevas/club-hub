@@ -10,7 +10,7 @@ import { Users, ChevronRight } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import ActivatePlayerModal from '../parent/components/ActivatePlayerModal'
+import ActivatePlayerModal from '../../components/shared/ActivatePlayerModal'
 import type { UserRole } from '@/types'
 
 type Player = {
@@ -26,71 +26,11 @@ type TeamWithPlayers = {
   name: string;
   season?: string;
   players: Player[];
+  coaches?: { coach_id: string; full_name: string }[];
 }
 
 export default function Teams() {
-  // Estados para gestión de coaches (solo super_admin)
-  const [teamCoaches, setTeamCoaches] = useState<Record<string, any[]>>({})
-  const [availableCoaches, setAvailableCoaches] = useState<any[]>([])
-  const [assigningTeamId, setAssigningTeamId] = useState<string | null>(null)
-  const [selectedCoachId, setSelectedCoachId] = useState<string>('')
-    const { role, user } = useAuth() as { role: UserRole; user: any }
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-
-  const [teams, setTeams] = useState<TeamWithPlayers[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  // Admin states
-  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([])
-  const [openCreate, setOpenCreate] = useState(false)
-  const [clubId, setClubId] = useState('')
-  const [name, setName] = useState('')
-  const [season, setSeason] = useState('')
-  const [creating, setCreating] = useState(false)
-
-  // UI
-  const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null)
-      // Cargar coaches disponibles (una vez)
-      useEffect(() => {
-        if (role !== 'super_admin') return
-
-        const loadCoaches = async () => {
-          const { data } = await supabase
-            .from('user_roles')
-            .select(`
-              user_id,
-              users_profile (
-                full_name
-              )
-            `)
-            .eq('role', 'coach')
-
-          setAvailableCoaches(data ?? [])
-        }
-
-        loadCoaches()
-      }, [role])
-
-      // Cargar coaches de un equipo (al expandir)
-      const loadTeamCoaches = async (teamId: string) => {
-        const { data } = await supabase
-          .from('team_coaches')
-          .select(`
-            coach_user_id,
-            users_profile (
-              full_name
-            )
-          `)
-          .eq('team_id', teamId)
-
-        setTeamCoaches(prev => ({
-          ...prev,
-          [teamId]: data ?? [],
-        }))
-      }
-    // Función para crear equipo
+    // Crear equipo
     const createTeam = async () => {
       if (!clubId || !name || !season) return;
       setCreating(true);
@@ -110,40 +50,85 @@ export default function Teams() {
       setName('');
       setSeason('');
       setOpenCreate(false);
-      loadTeams();
+      await loadTeams();
     };
+  // Estados
+  const [teamCoaches, setTeamCoaches] = useState<Record<string, any[]>>({});
+  const [availableCoaches, setAvailableCoaches] = useState<any[]>([]);
+  const [assigningTeamId, setAssigningTeamId] = useState<string | null>(null);
+  const [selectedCoachId, setSelectedCoachId] = useState<string>('');
+  const { role, user } = useAuth() as { role: UserRole; user: any };
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [teams, setTeams] = useState<TeamWithPlayers[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [clubs, setClubs] = useState<{ id: string; name: string }[]>([]);
+  const [openCreate, setOpenCreate] = useState(false);
+  const [clubId, setClubId] = useState('');
+  const [name, setName] = useState('');
+  const [season, setSeason] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
 
+  // Utilidad para mapear equipos y jugadores
+  const mapTeams = (data: any[]): TeamWithPlayers[] => {
+    return (data ?? []).map(t => ({
+      id: t.id,
+      name: t.name,
+      season: t.season,
+      players: Array.isArray(t.team_players)
+        ? t.team_players.map(tp => tp.player).filter(Boolean).flat()
+        : [],
+      coaches: Array.isArray(t.team_coaches)
+        ? t.team_coaches.map(tc => ({
+            coach_id: tc.coach_id,
+            full_name: tc.coach?.full_name ?? '—',
+          }))
+        : [],
+    }));
+  };
 
-  /* =======================
-     Redirect player
-  ======================= */
-  useEffect(() => {
-    if (role === 'player') {
-      navigate('/player/dashboard', { replace: true })
-    }
-  }, [role, navigate])
-
-  /* =======================
-     Load clubs (admin)
-  ======================= */
-  useEffect(() => {
-    if (role !== 'super_admin') return
-
-    supabase
+  // Cargar clubs
+  const loadClubs = async () => {
+    const { data } = await supabase
       .from('clubs')
       .select('id, name')
-      .order('name')
-      .then(({ data }) => setClubs(data ?? []))
-  }, [role])
+      .order('name');
+    setClubs(data ?? []);
+  };
 
-  /* =======================
-     Load teams by role
-  ======================= */
+  // Cargar coaches disponibles
+  const loadCoaches = async (clubId: string) => {
+    if (!clubId) return;
+    const { data } = await supabase
+      .from('coaches')
+      .select('id, full_name')
+      .eq('club_id', clubId);
+    setAvailableCoaches(data ?? []);
+  };
+
+  // Cargar coaches de un equipo (al expandir)
+  const loadTeamCoaches = async (teamId: string) => {
+    const { data } = await supabase
+      .from('team_coaches')
+      .select(`
+        coach_id,
+        coach:coaches (
+          full_name
+        )
+      `)
+      .eq('team_id', teamId);
+    setTeamCoaches(prev => ({
+      ...prev,
+      [teamId]: data ?? [],
+    }));
+  };
+
+  // Cargar equipos según rol
   const loadTeams = async () => {
-    setLoading(true)
-    setError(null)
-
-    // SUPER ADMIN
+    setLoading(true);
+    setError(null);
     if (role === 'super_admin') {
       const { data, error } = await supabase
         .from('teams')
@@ -161,50 +146,27 @@ export default function Teams() {
             )
           ),
           team_coaches:team_coaches!team_coaches_team_id_fkey (
-            coach_user_id,
-            coach:users_profile!team_coaches_coach_user_id_fkey (
+            coach_id,
+            coach:coaches (
               full_name
             )
           )
-        `)
-
+        `);
       if (error) {
-        setError('Error loading teams')
+        setError('Error loading teams');
       } else {
-        setTeams(
-          (data ?? []).map(t => ({
-            id: t.id,
-            name: t.name,
-            season: t.season,
-            players: Array.isArray(t.team_players)
-              ? t.team_players
-                  .map(tp => tp.player)
-                  .filter(Boolean)
-                  .flat()
-              : [],
-            coaches: Array.isArray(t.team_coaches)
-              ? t.team_coaches.map(tc => ({
-                  coach_user_id: tc.coach_user_id,
-                  full_name: tc.users_profile?.full_name ?? '—',
-                }))
-              : [],
-          }))
-        )
+        setTeams(mapTeams(data ?? []));
       }
-
-      setLoading(false)
-      return
+      setLoading(false);
+      return;
     }
-
-    // COACH
     if (role === 'coach') {
       const { data, error } = await supabase
         .from('team_coaches')
         .select(`teams ( id, name, season )`)
-        .eq('coach_user_id', user.id)
-
+        .eq('coach_id', user.id);
       if (error) {
-        setError('Error loading teams')
+        setError('Error loading teams');
       } else {
         setTeams(
           (data ?? [])
@@ -217,14 +179,11 @@ export default function Teams() {
               season: t.season,
               players: [],
             }))
-        )
+        );
       }
-
-      setLoading(false)
-      return
+      setLoading(false);
+      return;
     }
-
-    // PARENT
     if (role === 'parent') {
       const { data, error } = await supabase
         .from('team_players')
@@ -232,33 +191,27 @@ export default function Teams() {
           team:teams ( id, name, season ),
           player:players ( id, full_name, birth_date, user_id, parent_user_id )
         `)
-        .eq('player.parent_user_id', user.id)
-
+        .eq('player.parent_user_id', user.id);
       if (error || !data) {
-        setTeams([])
-        setLoading(false)
-        return
+        setTeams([]);
+        setLoading(false);
+        return;
       }
-
-      const map = new Map<string, TeamWithPlayers>()
-
+      const map = new Map<string, TeamWithPlayers>();
       data.forEach(row => {
-  const team = Array.isArray(row.team) ? row.team[0] : row.team;
-  const player = Array.isArray(row.player) ? row.player[0] : row.player;
-  if (!team || !team.id || !team.name || !player) return;
-
-  if (!map.has(team.id)) {
-    map.set(team.id, {
-      id: team.id,
-      name: team.name,
-      season: team.season,
-      players: [],
-    });
-  }
-
-  map.get(team.id)!.players.push(player);
-});
-
+        const team = Array.isArray(row.team) ? row.team[0] : row.team;
+        const player = Array.isArray(row.player) ? row.player[0] : row.player;
+        if (!team || !team.id || !team.name || !player) return;
+        if (!map.has(team.id)) {
+          map.set(team.id, {
+            id: team.id,
+            name: team.name,
+            season: team.season,
+            players: [],
+          });
+        }
+        map.get(team.id)!.players.push(player);
+      });
       setTeams(
         Array.from(map.values())
           .filter(team => team && typeof team.id !== 'undefined' && typeof team.name !== 'undefined')
@@ -268,14 +221,43 @@ export default function Teams() {
             season: team.season,
             players: Array.isArray(team.players) ? team.players : [],
           })) as TeamWithPlayers[]
-      )
-      setLoading(false)
+      );
+      setLoading(false);
     }
-  }
+  };
 
+  // Obtener clubId del super_admin
   useEffect(() => {
-    if (user?.id && role) loadTeams()
-  }, [user?.id, role])
+    if (!user?.id || role !== 'super_admin') return;
+    (async () => {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('club_id')
+        .eq('user_id', user.id)
+        .eq('role', 'super_admin')
+        .single();
+      if (data?.club_id) {
+        setClubId(data.club_id);
+        loadCoaches(data.club_id);
+      }
+    })();
+  }, [user?.id, role]);
+
+  // Cargar datos al montar y cuando cambie clubId
+  useEffect(() => {
+    loadClubs();
+    loadTeams();
+    if (role === 'super_admin' && clubId) {
+      loadCoaches(clubId);
+    }
+  }, [role, clubId]);
+
+  // Redirección para jugador
+  useEffect(() => {
+    if (role === 'player') {
+      navigate('/player/dashboard', { replace: true });
+    }
+  }, [role, navigate]);
 
   /* =======================
      UI STATES
@@ -352,7 +334,7 @@ export default function Teams() {
               </div>
             )}
           </div>
-          <Empty title={t('teams.emptyAdmin', 'Aún no hay equipos creados. Usa los botones de arriba para crear o gestionar equipos, jugadores o centers.')}/>
+          <Empty title={t('teams.emptyAdmin', 'Aún no hay equipos creados. Usa los botones de arriba para crear o gestionar equipos, jugadores o centers.')} />
         </div>
       )
     }
@@ -464,9 +446,14 @@ export default function Teams() {
                       {team.season}
                     </Badge>
                   )}
+                  {/* Mostrar coach principal si existe */}
+                  {team.coaches && team.coaches.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Entrenador: {team.coaches[0].full_name}
+                    </p>
+                  )}
                 </div>
               </div>
-
               <button
                 onClick={() => {
                   setExpandedTeamId(prev => (prev === team.id ? null : team.id))
@@ -476,29 +463,24 @@ export default function Teams() {
                 }}
               >
                 <ChevronRight
-                  className={`transition-transform ${
-                    expandedTeamId === team.id ? 'rotate-90' : ''
-                  }`}
+                  className={`transition-transform ${expandedTeamId === team.id ? 'rotate-90' : ''}`}
                 />
               </button>
             </div>
-
             {expandedTeamId === team.id && (
               <div className="border-t pt-3 space-y-2">
                 {/* Coaches (super_admin) - SIEMPRE ARRIBA */}
                 {role === 'super_admin' && (
                   <div className="space-y-2 pb-2 border-b mb-2">
                     <p className="text-sm font-semibold">Coaches</p>
-
                     {(teamCoaches[team.id] ?? []).map(c => (
                       <div
-                        key={c.coach_user_id}
+                        key={c.coach_id}
                         className="flex items-center justify-between p-2 rounded hover:bg-muted"
                       >
                         <span className="text-sm">
-                          {c.users_profile?.full_name ?? '—'}
+                          {c.coach?.full_name ?? '—'}
                         </span>
-
                         <button
                           className="text-xs text-destructive"
                           onClick={async () => {
@@ -506,8 +488,7 @@ export default function Teams() {
                               .from('team_coaches')
                               .delete()
                               .eq('team_id', team.id)
-                              .eq('coach_user_id', c.coach_user_id)
-
+                              .eq('coach_id', c.coach_id)
                             loadTeamCoaches(team.id)
                           }}
                         >
@@ -515,7 +496,6 @@ export default function Teams() {
                         </button>
                       </div>
                     ))}
-
                     <div className="flex gap-2 mt-2">
                       <select
                         value={selectedCoachId}
@@ -524,19 +504,18 @@ export default function Teams() {
                       >
                         <option value="">Seleccionar coach</option>
                         {availableCoaches.map(c => (
-                          <option key={c.user_id} value={c.user_id}>
-                            {c.users_profile?.full_name || c.coach?.full_name || '—'}
+                          <option key={c.id} value={c.id}>
+                            {c.full_name || '—'}
                           </option>
                         ))}
                       </select>
-
                       <button
                         className="px-3 py-1 bg-primary text-white text-sm rounded"
                         disabled={!selectedCoachId}
                         onClick={async () => {
                           await supabase.from('team_coaches').insert({
                             team_id: team.id,
-                            coach_user_id: selectedCoachId,
+                            coach_id: selectedCoachId,
                           })
                           setSelectedCoachId('')
                           loadTeamCoaches(team.id)
@@ -547,7 +526,6 @@ export default function Teams() {
                     </div>
                   </div>
                 )}
-
                 {/* Jugadores */}
                 {team.players.map(player => (
                   <div
@@ -562,7 +540,6 @@ export default function Teams() {
                           : '—'}
                       </p>
                     </div>
-
                     {player.user_id ? (
                       <span className="text-green-600 text-xs font-semibold">
                         Acceso activo

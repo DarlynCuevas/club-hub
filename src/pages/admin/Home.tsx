@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '@/lib/supabase'
 import { useNavigate } from 'react-router-dom'
-import ActivatePlayerModal from '../parent/components/ActivatePlayerModal'
+import ActivatePlayerModal from '../../components/shared/ActivatePlayerModal'
 
 export default function Home() {
   const { t } = useTranslation()

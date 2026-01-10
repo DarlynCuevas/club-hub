@@ -1,48 +1,69 @@
-{ 
-    "players": {
-      "title": "Jugadores (Admin)",
-      "subtitle": "Gestión de jugadores del club",
-      "noTeam": "Sin asignar",
-      "clubLabel": "Club",
-      "teamLabel": "Equipo",
-      "activeAccess": "Acceso activo",
-      "createBtn": "Crear jugador"
-    },
-    "parentPlayers": {
-      "title": "Mis hijos/as",
-      "subtitle": "Añade y gestiona tus hijos/as en el club",
-      "createBtn": "Crear jugador",
-      "new": "Nuevo jugador",
-      "club": "Club",
-      "selectClub": "Selecciona un club",
-      "namePlaceholder": "Nombre completo",
-      "birthDate": "Fecha de nacimiento",
-      "teamOptional": "Equipo (opcional)",
-      "noTeam": "Sin asignar",
-      "clubLabel": "Club",
-      "teamLabel": "Equipo",
-      "activeAccess": "Acceso activo"
-    },
-   
+{
+  "players": {
+    "title": "Jugadores (Admin)",
+    "subtitle": "Gestión de jugadores del club",
+    "noTeam": "Sin asignar",
+    "clubLabel": "Club",
+    "teamLabel": "Equipo",
+    "activeAccess": "Acceso activo",
+    "createBtn": "Crear jugador"
+  },
+  "parentPlayers": {
+    "title": "Mis hijos/as",
+    "subtitle": "Añade y gestiona tus hijos/as en el club",
+    "new": "Nuevo jugador",
+    "club": "Club",
+    "selectClub": "Selecciona un club",
+    "namePlaceholder": "Nombre completo",
+    "birthDate": "Fecha de nacimiento",
+    "teamOptional": "Equipo (opcional)",
+    "noTeam": "Sin asignar",
+    "clubLabel": "Club",
+    "teamLabel": "Equipo",
+    "activeAccess": "Acceso activo"
+  },
   "adminEvents": {
-    
     "title": "Eventos",
     "new": "Nuevo evento",
     "noAccess": "No tienes acceso a esta sección",
     "listPlaceholder": "La lista de eventos aparecerá aquí"
   },
-
-    "calendar": {
-      "title": "Calendario",
-      "days": ["D", "L", "M", "X", "J", "V", "S"],
-      "noEvents": "No hay eventos programados",
-      "months": [
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-      ],
-      "weekdays": [
-        "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
-      ]
-    },
+  "calendar": {
+    "title": "Calendario",
+    "days": [
+      "D",
+      "L",
+      "M",
+      "X",
+      "J",
+      "V",
+      "S"
+    ],
+    "noEvents": "No hay eventos programados",
+    "months": [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre"
+    ],
+    "weekdays": [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado"
+    ]
+  },
   "messages": {
     "title": "Mensajes",
     "empty": "No hay comunicados",
@@ -54,7 +75,6 @@
       "publishing": "Publicando…"
     }
   },
-
   "home": {
     "greeting": {
       "morning": "Buenos días",
@@ -70,94 +90,105 @@
     "parent": "Padre/Madre",
     "coach": "Entrenador/a",
     "player": "Jugador/a",
-    "club_admin": "Administrador/a",
-    "super_admin": "Super admin"
-  },
+    "players": {
+      "club_admin": "Administrador/a",
+      "super_admin": "Super admin"
+    },
     "eventTypes": {
       "match": "Partido",
       "training": "Entrenamiento",
       "meeting": "Reunión"
     },
-  "auth": {
-    "title": "Club Barcelona Bears",
-    "welcome": "Bienvenido de nuevo",
-    "createAccount": "Crea tu cuenta",
-    "fullName": "Nombre completo",
-    "fullNamePlaceholder": "Alex Johnson",
-    "email": "Correo electrónico",
-    "emailPlaceholder": "tu@email.com",
-    "password": "Contraseña",
-    "passwordPlaceholder": "••••••••",
-    "signIn": "Iniciar sesión",
-    "createAccountBtn": "Crear cuenta",
-    "noAccount": "¿No tienes cuenta?",
-    "signUp": "Regístrate",
-    "hasAccount": "¿Ya tienes cuenta?",
-    "terms": "Al continuar, aceptas nuestros Términos de servicio y Política de privacidad",
-    "pleaseFill": "Por favor, completa todos los campos",
-    "pleaseName": "Por favor, ingresa tu nombre",
-    "invalidCredentials": "Credenciales inválidas. Intenta de nuevo."
-  },
-  "teams": {
-    "title": "Equipos",
-    "empty": "No hay equipos asignados",
-    "emptyAdmin": "Aún no hay equipos creados. Usa los botones de arriba para crear o gestionar equipos, jugadores o centers.",
-    "createPlayer": "Crear jugador",
-    "coachSubtitle": "Equipos que entrenas",
-    "userSubtitle": "Tus equipos",
-    "manageCenters": "Gestionar centers",
-    "managePlayers": "Gestionar jugadores",
-    "createBtn": "Crear equipo",
-    "new": "Crear equipo",
-    "selectClub": "Selecciona un club",
-    "namePlaceholder": "Nombre del equipo",
-    "seasonPlaceholder": "Temporada (ej. 2025/2026)",
-    "center": "Center",
-    "noCenter": "Sin center",
-    "save": "Guardar",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "noPlayers": "No hay jugadores asignados"
-  },
-  "common": {
-    "back": "Atrás",
-    "cancel": "Cancelar"
-  },
-  "eventDetail": {
-    "notFound": "Evento no encontrado",
-    "attendance": "Asistencia",
-    "teams": "Equipo: {{teams}}",
-    "present": "Presente",
-    "absent": "Ausente",
-    "status": {
+    "auth": {
+      "title": "Club Barcelona Bears",
+      "welcome": "Bienvenido de nuevo",
+      "createAccount": "Crea tu cuenta",
+      "fullName": "Nombre completo",
+      "fullNamePlaceholder": "Alex Johnson",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "••••••••",
+      "signIn": "Iniciar sesión",
+      "createAccountBtn": "Crear cuenta",
+      "noAccount": "¿No tienes cuenta?",
+      "signUp": "Regístrate",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "terms": "Al continuar, aceptas nuestros Términos de servicio y Política de privacidad",
+      "pleaseFill": "Por favor, completa todos los campos",
+      "pleaseName": "Por favor, ingresa tu nombre",
+      "invalidCredentials": "Credenciales inválidas. Intenta de nuevo."
+    },
+    "teams": {
+      "title": "Equipos",
+      "empty": "No hay equipos asignados",
+      "emptyAdmin": "Aún no hay equipos creados. Usa los botones de arriba para crear o gestionar equipos, jugadores o centers.",
+      "createPlayer": "Crear jugador",
+      "coachSubtitle": "Equipos que entrenas",
+      "userSubtitle": "Tus equipos",
+      "manageCenters": "Gestionar centers",
+      "managePlayers": "Gestionar jugadores",
+      "createBtn": "Crear equipo",
+      "new": "Crear equipo",
+      "selectClub": "Selecciona un club",
+      "namePlaceholder": "Nombre del equipo",
+      "seasonPlaceholder": "Temporada (ej. 2025/2026)",
+      "center": "Center",
+      "noCenter": "Sin center",
+      "save": "Guardar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "noPlayers": "No hay jugadores asignados",
+       "createPlayer": {
+                "players.new": "Nuevo jugador",
+                "players.club": "Club",
+                "players.selectClub": "Selecciona un club",
+                "players.namePlaceholder": "Nombre completo",
+                "players.birthDate": "Fecha de nacimiento",
+                "players.teamOptional": "Equipo (opcional)",
+                "namePlaceholder": "Nombre completo"
+            } 
+    },
+    "common": {
+      "back": "Atrás",
+      "cancel": "Cancelar"
+    },
+    "eventDetail": {
+      "notFound": "Evento no encontrado",
+      "attendance": "Asistencia",
+      "teams": "Equipo: {{teams}}",
       "present": "Presente",
       "absent": "Ausente",
-      "unknown": "Desconocido"
+      "status": {
+        "present": "Presente",
+        "absent": "Ausente",
+        "unknown": "Desconocido"
+      },
+      "date": "{{start}} – {{end}}"
     },
-    "date": "{{start}} – {{end}}"
-  },
-  "profile": {
-    "accountSettings": "Configuración de la cuenta",
-    "privacy": "Privacidad",
-    "helpSupport": "Ayuda y soporte",
-    "demoSwitchRole": "Demo: Cambiar rol",
-    "language": "Idioma",
-    "signOut": "Cerrar sesión",
-    "version": "ClubKit v{{version}}"
-  },
-  "centers": {
-    "loading": "Cargando centers...",
-    "title": "Centros",
-    "subtitle": "Gestiona las instalaciones de los clubs",
-    "create": "Crear center",
-    "new": "Nuevo center",
-    "club": "Club",
-    "selectClub": "Selecciona un club",
-    "name": "Nombre del center",
-    "address": "Dirección",
-    "addressPlaceholder": "Opcional",
-    "createBtn": "Crear",
-    "empty": "No hay centers creados.",
-    "clubLabel": "Club"
+    "profile": {
+      "accountSettings": "Configuración de la cuenta",
+      "privacy": "Privacidad",
+      "helpSupport": "Ayuda y soporte",
+      "demoSwitchRole": "Demo: Cambiar rol",
+      "language": "Idioma",
+      "signOut": "Cerrar sesión",
+      "version": "ClubKit v{{version}}"
+    },
+    "centers": {
+      "loading": "Cargando centers...",
+      "title": "Centros",
+      "subtitle": "Gestiona las instalaciones de los clubs",
+      "create": "Crear center",
+      "new": "Nuevo center",
+      "club": "Club",
+      "selectClub": "Selecciona un club",
+      "name": "Nombre del center",
+      "address": "Dirección",
+      "addressPlaceholder": "Opcional",
+      "createBtn": "Crear",
+      "empty": "No hay centers creados.",
+      "clubLabel": "Club"
+    }
   }
 }

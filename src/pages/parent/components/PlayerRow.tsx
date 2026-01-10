@@ -1,4 +1,4 @@
-import ActivatePlayerModal from './ActivatePlayerModal'
+import ActivatePlayerModal from '../../../components/shared/ActivatePlayerModal'
 
 type Player = {
   id: string
