@@ -149,15 +149,7 @@
       },
       "date": "{{start}} – {{end}}"
     },
-    "profile": {
-      "accountSettings": "Configuración de la cuenta",
-      "privacy": "Privacidad",
-      "helpSupport": "Ayuda y soporte",
-      "demoSwitchRole": "Demo: Cambiar rol",
-      "language": "Idioma",
-      "signOut": "Cerrar sesión",
-      "version": "ClubKit v{{version}}"
-    },
+   
     "centers": {
       "loading": "Cargando centers...",
       "title": "Centros",
@@ -193,5 +185,14 @@
       "pleaseFill": "Por favor, completa todos los campos",
       "pleaseName": "Por favor, ingresa tu nombre",
       "invalidCredentials": "Credenciales inválidas. Intenta de nuevo."
+    },
+     "profile": {
+      "accountSettings": "Configuración de la cuenta",
+      "privacy": "Privacidad",
+      "helpSupport": "Ayuda y soporte",
+      "demoSwitchRole": "Demo: Cambiar rol",
+      "language": "Idioma",
+      "signOut": "Cerrar sesión",
+      "version": "ClubKit v{{version}}"
     }
 }

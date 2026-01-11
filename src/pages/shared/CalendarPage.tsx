@@ -1,5 +1,6 @@
 import { Spinner } from '@/components/ui/spinner'
 import { useState, useEffect } from 'react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { supabase } from '@/lib/supabase'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -26,6 +27,8 @@ import { EventDB } from '@/types'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 
+// Import CreateEventModal from Profile (copy implementation inline for now)
+
 type HijoPadre = { id: string; full_name: string; team_ids: string[] }
 
 interface CalendarPageProps {
@@ -47,8 +50,168 @@ interface ParentEventRow {
   scope: 'team' | 'club';
 }
 
+function CreateEventModal({ open, onOpenChange, teams, onEventCreated }) {
+  const [scope, setScope] = useState<'global' | 'team'>('global');
+  const [title, setTitle] = useState('');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const [eventType, setEventType] = useState('training');
+  const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { clubId } = useAuth();
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+    if (!clubId) {
+      setError('No se ha encontrado el club. Reintenta o contacta con soporte.');
+      setSaving(false);
+      return;
+    }
+    if (scope === 'team' && selectedTeams.length === 0) {
+      setError('Debes seleccionar al menos un equipo');
+      setSaving(false);
+      return;
+    }
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const access_token = sessionData?.session?.access_token;
+      if (!access_token) {
+        setError('No hay sesión activa. Por favor, vuelve a iniciar sesión.');
+        setSaving(false);
+        return;
+      }
+      const response = await fetch('https://jezehgemafbbplfajjoo.supabase.co/functions/v1/create-event', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${access_token}`,
+        },
+        body: JSON.stringify({
+          title,
+          start_time: start,
+          end_time: end,
+          event_type: eventType,
+          scope,
+          club_id: clubId,
+          team_ids: scope === 'team' ? selectedTeams : undefined,
+        }),
+      });
+      const text = await response.text();
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch {
+        result = { raw: text };
+      }
+      if (!response.ok || result.error) {
+        setError(result.error || 'Error al crear el evento');
+      } else {
+        onEventCreated?.();
+        onOpenChange(false);
+      }
+    } catch (e) {
+      setError('Error inesperado al crear el evento');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Crear evento</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Tipo de evento</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
+                <input type="radio" checked={scope === 'global'} onChange={() => setScope('global')} />
+                Evento del club
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" checked={scope === 'team'} onChange={() => setScope('team')} />
+                Evento de equipo
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {scope === 'global'
+                ? 'Visible para todos los jugadores y padres'
+                : 'Visible solo para los equipos seleccionados'}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Título</label>
+            <input className="w-full border rounded px-3 py-2" value={title} onChange={e => setTitle(e.target.value)} />
+          </div>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1">Fecha y hora inicio</label>
+              <input type="datetime-local" className="w-full border rounded px-3 py-2" value={start} onChange={e => setStart(e.target.value)} />
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-1">Fecha y hora fin</label>
+              <input type="datetime-local" className="w-full border rounded px-3 py-2" value={end} onChange={e => setEnd(e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Tipo</label>
+            <select className="w-full border rounded px-3 py-2" value={eventType} onChange={e => setEventType(e.target.value)}>
+              <option value="training">Entrenamiento</option>
+              <option value="match">Partido</option>
+              <option value="meeting">Reunión</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+          {scope === 'team' && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Equipos</label>
+              <select
+                multiple
+                className="w-full border rounded px-3 py-2"
+                value={selectedTeams}
+                onChange={e => setSelectedTeams(Array.from(e.target.selectedOptions, o => o.value))}
+              >
+                {teams.map(team => (
+                  <option key={team.id} value={team.id}>{team.name}</option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1">Selecciona uno o más equipos</p>
+            </div>
+          )}
+          {error && <p className="text-xs text-destructive mt-2">{error}</p>}
+          <div className="flex gap-2 mt-4">
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? 'Guardando...' : 'Crear evento'}
+            </Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function CalendarPage() {
-  const { user, role } = useAuth();
+  const { user, role, clubId } = useAuth();
+    // State for event creation modal (admin)
+    const [createOpen, setCreateOpen] = useState(false);
+    const [teams, setTeams] = useState<any[]>([]);
+
+    // Load teams for event creation modal
+    useEffect(() => {
+      async function fetchTeams() {
+        if (!clubId) return;
+        const { data } = await supabase.from('teams').select('id, name').eq('club_id', clubId);
+        setTeams(data || []);
+      }
+      if (role === 'super_admin') fetchTeams();
+    }, [clubId, role]);
   const [hijosDelPadre, setHijosDelPadre] = useState<any[]>([]);
   // Función para obtener hijos asociados a un evento
   function getHijosAsociados(event: EventDB) {
@@ -238,12 +401,21 @@ export default function CalendarPage() {
 
   return (
     <div className="px-4 pt-6 pb-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header + Botón crear evento para admin */}
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-semibold text-foreground">
           {t('calendar.title')}
         </h1>
+        {role === 'super_admin' && (
+          <Button onClick={() => setCreateOpen(true)}>
+            {t('calendar.create', 'Crear evento')}
+          </Button>
+        )}
       </div>
+      {/* Modal crear evento */}
+      {role === 'super_admin' && (
+        <CreateEventModal open={createOpen} onOpenChange={setCreateOpen} teams={teams} onEventCreated={() => window.location.reload()} />
+      )}
 
       {/* Calendar */}
       <Card className="shadow-card">

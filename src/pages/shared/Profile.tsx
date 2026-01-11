@@ -476,7 +476,7 @@ function ManageEventsModal({ open, onOpenChange, teams }) {
           <DialogTitle>Gestión de eventos</DialogTitle>
         </DialogHeader>
         <div className="flex justify-end mb-2">
-          <Button onClick={() => setCreateOpen(true)}>+ Crear evento</Button>
+          <Button onClick={() => setCreateOpen(true)}>Crear evento</Button>
         </div>
         {loading ? (
           <p>Cargando eventos...</p>
